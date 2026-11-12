@@ -13,7 +13,7 @@ from __future__ import annotations
 import sys
 import types
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from . import _engine                                    # noqa: E402
 from ._api import DEFAULT_SESSION, KINDS, Ctx, run       # noqa: E402

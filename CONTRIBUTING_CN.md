@@ -10,9 +10,9 @@
 >
 > 此政策未来会重新审视。
 
-> **阶段状态（V1.0.0）**
+> **阶段状态（V1.0.1）**
 >
-> SoulRun 当前版本：V1.0.0，第一个正式版本。下方流程描述的是**目标**开发模型。初期决策由 AIXP Labs 核心维护者做出；社区讨论窗口将随贡献者基数增长而扩大。
+> SoulRun 当前版本：V1.0.1，尚未发布的维护候选；带着的引擎仍为1.0.0。下方流程描述的是**目标**开发模型。初期决策由 AIXP Labs 核心维护者做出；社区讨论窗口将随贡献者基数增长而扩大。
 
 ## 如何贡献
 
@@ -198,4 +198,4 @@ Copyright 2026 AIXP Labs AIXP.dev | SoulRun.dev
 
 ---
 
-Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.0. www.soulrun.dev
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.1. www.soulrun.dev

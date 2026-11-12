@@ -45,14 +45,19 @@ review [CHANGELOG.md](CHANGELOG.md) before reporting or deploying a fix.
   full text of a turn printed by the command line. SoulRun does not encrypt any of
   it. Restrict filesystem access, keep the folder out of shared or synchronized
   locations, and use encrypted storage where the data classification requires it.
-- A run folder carries a `.gitignore` of `*` from its first run: SoulRun writes one
-  when it creates the folder, or takes one for the first time that has none; after
+- SoulRun attempts to write a `.gitignore` of `*` when it creates a run folder,
+  or takes one for the first time that has none; verify it exists, since the write is best effort. After
   that the owner's choice stands. The run folder, named by the caller or the
   default, must be new, empty (a `.gitignore`, an engine's own runs and system files
   aside) or one SoulRun already keeps runs in, and must not hold an engine program;
   any other folder is refused, so run data never lands among other files. On Linux
   and macOS a run folder SoulRun creates is readable by its owner only (700);
   `soulrun --doctor` warns when other users can open it.
+- Windows retains the same `0o700` creation policy. Python 3.11.10 / 3.12.4 and later minor series can apply a
+  protected DACL that a restricted token cannot use; this limitation is not fixed by the 1.0.1 documentation
+  patch. There is no automatic inheritance or ACL widening. A pre-created directory must already be permitted
+  by the host and suitable for sensitive data; neither pre-creation nor `.gitignore` proves privacy. A parent
+  write probe in `--doctor` does not test a nonexistent child's later access or any other user's permissions.
 - `session_id` separates conversations; it is not authentication. Hosts that serve
   mutually untrusted users must give each trust domain its own `soulrun_cache_dir`
   (or agent folder) and enforce access themselves.
@@ -125,6 +130,10 @@ review [CHANGELOG.md](CHANGELOG.md) before reporting or deploying a fix.
 - Ignore local environment variants, provider profiles, private keys, raw logs and build outputs. Keep the
   sanitized `.env.example` and legitimate public JSON examples reviewable. Ignore rules do not remove tracked
   files, clean history, encrypt records or provide access control; review actual public inputs and built packages.
+- Local `.ssh` and `.aws` authentication directories are ignored and refused in distribution archives even
+  when their content looks harmless. Ordinary `examples/ssh`, `examples/aws` and `.ssh.example`/`.aws.example`
+  remain reviewable. E-mail-shaped content is not exempt merely because its suffix resembles a file extension;
+  only the explicit project/neutral address allow-list applies.
 - Do not put credentials in command arguments, issue reports, screenshots or test fixtures. Use synthetic
   values in public regressions and keep raw evidence private. A file being consumed, moved or deleted is not
   evidence of secure erasure. Provider/host logs and program tools have their own retention and network policies.
@@ -174,10 +183,14 @@ review [CHANGELOG.md](CHANGELOG.md) before reporting or deploying a fix.
 - `soulrun_cache_dir` 里的运行数据就是对话本身：用户的消息、模型的报告、门的问题和回答。`.soulrun/entries/<N>.txt` 保存命令行
   打印过的那一轮的全文。SoulRun 不加密其中任何内容。应限制文件系统权限，不把这个目录放在共享或同步的位置，并在数据分级要求时
   使用加密存储。
-- 运行目录从第一场运行起就带内容为 `*` 的 `.gitignore`：SoulRun 新建目录、或第一次接管一个没有它的目录时写上；之后归目录的主人决定。
+- SoulRun 新建运行目录、或第一次接管一个没有忽略文件的目录时，尝试写入内容为 `*` 的 `.gitignore`；这是尽力而为，须核对它确实存在。
+  之后归目录的主人决定。
   放运行的目录（不论是调用方指定的还是默认的）必须是新的、空的（`.gitignore`、引擎自己的运行和系统文件不算），或者 SoulRun 本来就在
   里面放运行的，而且不能放着引擎程序；别的目录一律拒绝，运行数据不会混进别的文件中间。在 Linux、macOS 上，SoulRun 新建的运行目录只有
   自己能读（700）；别的用户能打开时 `soulrun --doctor` 会提醒。
+- Windows保持相同的`0o700`创建策略。Python3.11.10 / 3.12.4及以后次版本可能应用受限令牌无法使用的受保护DACL；1.0.1文档补丁
+  没有修复这项限制，不自动继承或放宽ACL。预建目录必须本来就被宿主允许且适合敏感数据；预建和`.gitignore`均不证明私有。
+  `--doctor`父目录写入探针不验证尚不存在的子目录后续访问能力，也不验证其他用户的权限。
 - `session_id` 只用来区分对话，不是身份认证。服务互不信任用户的宿主，必须给每个信任域单独的 `soulrun_cache_dir`（或代理目录），
   并自行做访问控制。
 - 在命令行上，SoulRun 从文件或标准输入读用户的话，不把消息放进进程参数；但用户为创建文件或提供输入写的 shell 命令仍可能留下历史，
@@ -216,6 +229,8 @@ review [CHANGELOG.md](CHANGELOG.md) before reporting or deploying a fix.
 
 - 忽略本机环境变体、服务商配置、私钥、原始日志和构建输出；保留脱敏 `.env.example` 和合法公开 JSON 示例可审。
   ignore 不移除已跟踪文件、不清历史、不加密、不提供访问控制；仍须审查实际公开输入和构建包。
+- 本机`.ssh`和`.aws`认证目录即使内容看似中性，也忽略并拒绝打入发行归档；普通`examples/ssh`、`examples/aws`与`.ssh.example`/`.aws.example`
+  仍可审。邮箱形状的内容不能仅凭后缀像文件扩展名就豁免，只保留明确的项目/中性邮箱允许名单。
 - 不把凭据放进命令参数、Issue、截图或测试夹具。公开回归用合成值，原证据私有保留。文件被消费、移动或删除不证明安全擦除。
   服务商、宿主日志和业务工具有各自的留存与联网政策。
 - `human_turn` 与宿主能力由受信调用者如实声明，不是独立认证的身份。报告或可写证明文件本身不能证明原 child 身份，
@@ -225,4 +240,4 @@ review [CHANGELOG.md](CHANGELOG.md) before reporting or deploying a fix.
 
 ---
 
-Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.0. www.soulrun.dev
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.1. www.soulrun.dev

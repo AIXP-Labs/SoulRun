@@ -8,6 +8,10 @@ engine's text expects to find on a machine, the CI pins, and the commands requir
 
 For the Chinese version, see [DEPENDENCIES_CN.md](DEPENDENCIES_CN.md).
 
+This 1.0.1 review keeps every declared constraint unchanged. Current candidate results, skips and conditional
+inheritance are in the [local qualification summary](README.md#soulrun-101-local-qualification); they do not
+qualify a different resolved environment. The dated upstream review below is not a new transitive audit.
+
 ## 1. Version Policy
 
 - SoulRun has **no runtime dependency**. `[project].dependencies` is empty, a test keeps it empty, and
@@ -33,11 +37,11 @@ For the Chinese version, see [DEPENDENCIES_CN.md](DEPENDENCIES_CN.md).
 
 | Surface | Supported range | Versions verified locally |
 |---|---|---|
-| SoulRun Python | `requires-python = ">=3.11"` declares a minimum, not an upper bound | November 11 local SDK source checks on Windows 3.12.9 and Ubuntu 3.11.18/3.12.3/3.13.18/3.14.10/3.15.2; exact head and inheritance below. Older-head evidence is retained separately |
-| CI matrix | tests: Ubuntu and Windows × 3.11, 3.12, 3.13, 3.14, 3.15; package build and tests of the installed wheel: Ubuntu and Windows × 3.12 | 12 configured jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); the two added 3.15 jobs await hosted execution. The preceding 10-job result is dated in [Verification Scope](docs/verification-1.0.0.md) |
+| SoulRun Python | `requires-python = ">=3.11"` declares a minimum, not an upper bound | November 12 frozen 1.0.1 candidate: Windows and Ubuntu source suites on 3.11–3.15, each separately, plus both 3.12 cold installations; skips and later tooling changes require their own exact-input accounting |
+| CI matrix | tests: Ubuntu and Windows × 3.11, 3.12, 3.13, 3.14, 3.15; package build and tests of the installed wheel: Ubuntu and Windows × 3.12 | 12 configured jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); the exact 1.0.1 release commit still needs its own hosted result. Local checks and older 1.0.0 CI cannot substitute for it |
 | The `python` a model's shell finds (every engine tool in the entry-path form; a sub-agent's engine tools and a program's own `python ...` tools in every form) | a compatible Python; use an interpreter meeting SoulRun's declared minimum, and any program-specific requirements | reported by `soulrun --doctor`: none found is a `FAIL` in every form; discovery alone does not qualify a business program |
 
-The November 11 checks on digest `9e618ba59d3238058305a41778af6b1b03000107b0343633eb044cee0ad15d3b`
+The following is retained **November 11 history**, not the latest 1.0.1 measurement. The checks on digest `9e618ba59d3238058305a41778af6b1b03000107b0343633eb044cee0ad15d3b`
 ran each Ubuntu SDK line separately (911 passed / 4 skipped / 915 total) and Windows 3.12.9
 (912 passed / 3 skipped / 915 total). Windows 3.11–3.15 SDK and cold-install evidence is inherited from
 the exact unchanged payload. These local Python 3.15 results are not hosted-CI evidence or a support-policy change.

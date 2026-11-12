@@ -26,7 +26,7 @@ def test_a_fresh_agent_folder_passes_and_nothing_is_created(soulrun, agent):
     assert statuses == {"versions": "OK", "engine files": "OK", "slim program": "OK", "engine interface": "OK",
                         "python for the model": "OK", "program form": "OK", "engine settings": "OK", "agent folder": "OK",
                         "programs": "OK", "soulrun_cache_dir": "OK"}
-    assert "will be created at the first run" in next(c.detail for c in checks if c.name == "soulrun_cache_dir")
+    assert "creation will be attempted at the first run" in next(c.detail for c in checks if c.name == "soulrun_cache_dir")
     assert "aiap: demo_aiap, other_aiap; aisp: demo_aisp" in next(c.detail for c in checks if c.name == "programs")
     assert not (agent / ".soulrun_cache").exists()                                 # read-only
 
@@ -74,6 +74,28 @@ def test_whether_a_folder_can_be_written_is_tried_once_and_leaves_nothing(soulru
     checks = _doctor.run(agent_dir=agent, soulrun_cache_dir=data)
     assert _statuses(checks)["soulrun_cache_dir"] == "FAIL" and "cannot be written" in next(c.detail for c in checks if c.name == "soulrun_cache_dir")
     assert _doctor.exit_code(checks) == 1
+
+
+def test_missing_cache_qualifies_the_existing_parent_probe(soulrun, agent, monkeypatch):
+    from soulrun import _doctor, _select
+
+    cache = agent / "new-parent" / "runs"
+    places = _select.resolve_places(agent_dir=agent, soulrun_cache_dir=cache, create=False)
+    attempts = []
+
+    def writable(folder):
+        attempts.append(folder)
+        return True
+
+    monkeypatch.setattr(_doctor, "_writable", writable)
+    checks = _doctor._cache_checks(places)
+    result = next(c for c in checks if c.name == "soulrun_cache_dir")
+    assert result.status == "OK" and _doctor.exit_code(checks) == 0
+    assert attempts == [agent]
+    assert "write probe passed for" in result.detail
+    assert "creation will be attempted" in result.detail
+    assert "access to the new folder and its privacy are not verified" in result.detail
+    assert not cache.exists() and not cache.parent.exists()
 
 
 def test_time_zone_data_is_checked_in_both_pythons(soulrun, monkeypatch):

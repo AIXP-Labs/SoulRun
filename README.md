@@ -77,7 +77,7 @@ through the engine it carries. These rules hold in SoulRun's code and are covere
 | **Never choose for the human** | A designated program is used as designated and never silently replaced; which candidate fits the words is judged by the engine, and an unclear case goes to the human. |
 | **Never answer for the human** | A gate or a doubt is shown to the human as written; the human's reply comes back as an ordinary message. Nothing in SoulRun answers a question, and while a run waits at a gate for the human's answer, a turn marked as not the human's (`human_turn=False`) is refused (`HUMAN_REPLY_REQUIRED`). |
 | **No silent fallback** | A value that is set but unusable is an error with a stable code, never quietly replaced by a default. |
-| **The human's words stay the human's** | SoulRun opens no network connection. Runs, which hold the user's words, stay in `soulrun_cache_dir`, and so does the file a command-line turn read them from (moved into its run). A folder SoulRun creates, or takes for the first time, gets a `.gitignore` of `*` unless it already has one (on Linux and macOS a folder it creates is its owner's only), and a folder that already holds other files is refused. |
+| **The human's words stay the human's** | SoulRun opens no network connection. Runs, which hold the user's words, stay in `soulrun_cache_dir`, and so does the file a command-line turn read them from (moved into its run). SoulRun attempts to write a `.gitignore` of `*` when creating or first taking a folder that lacks one; verify it exists (on Linux and macOS a folder it creates is its owner's only). A folder that already holds other files is refused. |
 | **Say what was done** | Each run records which folders it used and whether each came from an argument, an environment variable or a default; `soulrun --doctor` reports what would quietly degrade a run. |
 
 The engine applies the same axiom inside a run: its user gates and HSAW doubt gates stop the run
@@ -103,9 +103,10 @@ python -m pip install soulrun                                          # from Py
 python -m pip install "git+https://github.com/AIXP-Labs/SoulRun.git"   # or straight from GitHub
 ```
 
-These are release-installation commands, not proof that a release is currently available on either platform.
-V1.0.0 remains fixed during release preparation; for a local candidate, use its verified artifact or approved
-checkout and check the manifest, not the version number alone. See [Verification Scope](docs/verification-1.0.0.md).
+These are release-installation commands, not proof that this checkout is published. This checkout targets the
+unreleased 1.0.1 package; the bundled engine remains 1.0.0. For a local candidate, use its verified artifact or
+approved checkout and check the manifest, not the version number alone. The dated 1.0.0 evidence in
+[Verification Scope](docs/verification-1.0.0.md) is not a new 1.0.1 acceptance result.
 
 Then check it:
 
@@ -179,11 +180,29 @@ the model drives the bundled engine with the engine's own commands:
 | the runs | `soulrun_cache_dir` — by default `.soulrun_cache` in the agent folder (the current folder unless one is named), or the folder you name. It holds run data only. A folder that holds an engine program (such as a SoulBot agent's own engine folder) is refused, so two engines never share one set of runs; so is one that already holds other files. Deleting it deletes the runs, unfinished ones included |
 | your programs | `aiap_dir`, `aisp_dir` (by default `aiap/` and `aisp/` in the agent folder) |
 
+### Windows run-folder permissions
+
+The restricted-token default-folder problem is **not fixed** in this patch: SoulRun retains `mode=0o700`, with no
+automatic parent-ACL inheritance, added principals or changes to existing directory permissions. Windows handles
+this mode specially starting with Python **3.11.10** and **3.12.4**, and in Python 3.13+; a protected DACL can leave
+a restricted process unable to write to the directory it just created. Creation can return success while a later
+write fails and `.gitignore` is absent; its write is best effort, not an access-control guarantee.
+
+If necessary, pre-create a dedicated empty directory in a host-permitted location whose actual ACL is suitable
+for sensitive run data, then pass `--soulrun-cache-dir` (SDK: `soulrun_cache_dir`). This does not prove the directory
+is private: broad parent access can be inherited, and a writable parent can permit replacement. Do not pre-create
+the internal `.soulrun` folder, widen existing ACLs, elevate or disable a sandbox as a shortcut. Existing directory
+permissions are left alone; actually check that `.gitignore` was written.
+
+For a missing run folder, `--doctor` probes only its nearest existing parent. An `OK` parent write probe does not
+prove the new folder will be accessible or private after creation. For an existing folder it tests the current
+process's write access, not every principal's effective permissions. See [Security](SECURITY.md#deployment-baseline).
+
 Inside `soulrun_cache_dir`:
 
 | Path | Whose | What |
 |---|---|---|
-| `.gitignore` | SoulRun's | `*`, to reduce accidental inclusion of run data: written when SoulRun creates the folder, or takes one for the first time that has none. After that the owner decides. It does not untrack files, prevent forced inclusion, encrypt data or restrict access |
+| `.gitignore` | SoulRun's | `*`, to reduce accidental inclusion of run data: SoulRun attempts to write it when creating or first taking an empty folder that has none. The write is best effort; verify it exists. After that the owner decides. It does not untrack files, prevent forced inclusion, encrypt data or restrict access |
 | `.execution_cache/<N>/` | the engine's | one folder per run. The engine keeps the latest 100 runs (`CACHE_NUM`) and removes older ones that are finished; a run that is still going or waiting for the human is never removed. Every call reads each kept run: measured on an earlier build (not re-measured for this one), a call took about 50 ms with a few runs and about 0.2 s with 100. It also takes longer as the index of the conversation's latest run grows, which SoulRun and the engine read and check on every call (on that earlier build, 77 ms a read for a 1.9 MB index, a long node program's; SoulRun reads it twice before the engine prepares the turn - once while finding the conversation's latest run, once more for its checks - and once after) |
 | `.soulrun/runs/<N>.json` | SoulRun's | which folders the run was created with, and whether each came from an argument, an environment variable or the default; the SoulRun version, engine version and engine digest that created it, and its candidates. Later, whether the run was given the slim form and any problem the slim form had, and, when a human ends a run of another engine build here, that it was ended that way |
 | `.soulrun/turns/<N>.json` | SoulRun's | the run's latest turn: `turn_id` (the engine's, which is the run's number - `ctx.turn_id` too - the same on every turn of the run), `host_turn_id` (the host's), `turn` (1, 2, ... within the run), and the run's `trace_id`. The engine numbers a new run one past the highest it keeps, so a number comes back once the latest runs are removed or cleared: a run whose `trace_id` is not the one kept here counts from 1 again. When the engine hands the same run back for the same message within two minutes (a rebootstrap), it is the same turn, keeping its number, only with the same `host_turn_id`; otherwise - another `host_turn_id`, or none to tell by - it is the next turn |
@@ -358,6 +377,10 @@ removed at once — on Windows the usual check only looks at the read-only attri
 `.gitignore` or, on Linux and macOS, one other users can open, runs that never finished, and on Windows a run folder
 deep enough for the engine's files to reach the 260-character limit. It runs no program. It exits `1` when a check
 fails; warnings do not fail.
+
+When the run folder does not exist, the reported `OK` qualifies the existing-parent write probe only; it does
+not verify permissions after creating a new folder. The diagnostic does not create a directory to test that
+policy or evaluate its privacy for other users.
 
 The user's words are read from a file or from standard input, never from the command line itself. A
 byte-order mark at the very start (Notepad and PowerShell often write one) is dropped, here and in the Python
@@ -682,6 +705,50 @@ No test calls a model. Where a model would act, the test sends the engine what a
 
 ### Verified Test Baseline
 
+#### SoulRun 1.0.1 Local Qualification
+
+The package remains **unreleased**; its canonical engine is still **1.0.0**. This is the B-scope
+documentation, diagnostic-wording and metadata patch, **not a fix for S1** (the Windows restricted-token
+default run-folder failure). Private creation policy is unchanged; no inherited-ACL fallback is added.
+
+Release-tool checks additionally reject e-mail-shaped content regardless of a file-like suffix and exclude local
+`.ssh`/`.aws` authentication directories without hiding neutral public examples. This does not change runtime
+behavior or dependencies; these tooling changes need their own checks, not the older counts below.
+
+The following November 12 results belong to the frozen 1.0.1 candidate **before this release-summary
+refresh**. Runtime executable sources and all 97 canonical resources are unchanged by this refresh. Every test
+row below had zero failures/errors; skipped cases remain skipped, not counted as passes.
+
+| Scope | Environment | Passed / skipped / total |
+|---|---|---|
+| Source package suite | Windows, Python 3.11–3.15, each separately | 1022 / 5 / 1027 |
+| Source package suite | Ubuntu, Python 3.11–3.15, each separately | 1023 / 4 / 1027 |
+| Fresh installed wheel | Windows, Python 3.12.9 | 1021 / 6 / 1027 |
+| Fresh installed wheel | Ubuntu, Python 3.12.3 | 1022 / 5 / 1027 |
+| Shared Engine full selection | Windows, Python 3.12.9 | 8621 / 9 / 8630 |
+| A local user-site CLI/SDK update | Windows, Python 3.12.9; affected tests only | 91 / 1 / 92 |
+
+- **Skips:** package runs retain the applicable missing-build-output, absent sibling-SoulBot-source,
+  POSIX-only and source-copy-only cases. The nine Windows Engine skips are eight unavailable-symlink-
+  privilege cases and one POSIX-path case. The local update's one skip is POSIX permissions. Separate
+  archive checks and installed-copy clean/damaged/restored checks do not turn skipped test IDs into passes.
+- **Inheritance:** Ubuntu Engine qualification is conditional inheritance of the earlier exact-runtime
+  and dependency/QA combination, not a new full run. Four later QA layout tests ran only on Windows.
+  The five-version package runs are separate executions of the same selection, not extra unique features.
+- **Local gates:** 70 recorded checks across both platforms and five interpreters passed; existing
+  conformance warnings C-06/C-09 remain. Local checks are not hosted CI or a zero-warning claim.
+- **Not qualified here:** no repaired S1 default-folder run, new model acceptance, Creator long flow,
+  browser child handover, Telegram or macOS result. Codex reporting-host restrictions remain separate.
+  The local user installation is not a production-host update or qualification of every host.
+- **Publication:** the configured 12 hosted-CI jobs still need a result for the exact 1.0.1 release commit.
+  No TestPyPI/PyPI publication is proved here. Earlier artifacts and installed packages do not contain
+  this new prose; final release inputs require fresh artifact checks. No repeated full matrix or model
+  run is implied by this documentation-only refresh. See [1.0.1 changes](CHANGELOG.md#101---unreleased).
+
+#### Earlier 1.0.0 Evidence
+
+The dated text below is retained as history, not a statement about current installations or hosted-CI status.
+
 The current 97-resource source manifest, after history trimming and host-neutral usage clarification, is
 `9e618ba59d3238058305a41778af6b1b03000107b0343633eb044cee0ad15d3b`.
 Executable sources and governance fields are unchanged; the standalone caller guide was corrected too.
@@ -911,7 +978,7 @@ This software is **experimental** and provided for **research and educational pu
 
 ---
 
-Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.0. <www.soulrun.dev>
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.1. <www.soulrun.dev>
 
 <a id="alignment-philosophy"></a>
 

@@ -8,6 +8,35 @@ changes only when the engine does. The version promises SoulRun's own surface; w
 the modules `host.engine()` reaches, the inside of the dicts the host doors return, the engine's error codes, the
 files inside a run) changes with the engine version and is outside it ([GOVERNANCE.md](GOVERNANCE.md#versioning)).
 
+## [1.0.1] - Unreleased
+
+- Preserve the existing private `0o700` run-folder creation policy. The Windows restricted-token default-folder
+  limitation remains unresolved; no inherited-ACL fallback, added principals or existing-permission changes.
+- Correct the Windows creation comment and qualify the existing doctor parent-write probe: it does not verify
+  access or privacy of a directory that has not been created. Keep statuses, JSON fields, exit codes and probe
+  behavior unchanged; add no directory-creation simulation or ACL analyzer.
+- Align English/Chinese permission and privacy guidance, best-effort `.gitignore` wording and the conditional
+  pre-created-directory workaround. Pre-creation is not a privacy guarantee and must not bypass the host sandbox.
+- Add the Python 3.15 classifier and point project support metadata to Discussions. Runtime dependencies remain
+  empty and the canonical engine stays 1.0.0 with its existing resource manifest. Historical 1.0.0 evidence is
+  preserved, not relabeled as acceptance of this unreleased candidate.
+- Add a bilingual [local qualification summary](README.md#soulrun-101-local-qualification)
+  ([中文](README_CN.md#soulrun-101-本地验收范围)), separating recorded 1.0.1 candidate tests, original skips,
+  conditional Ubuntu Engine inheritance and untested host paths from older 1.0.0 evidence and hosted CI.
+  This prose-only refresh changes no executable source, dependency, permission or canonical resource.
+- A prior frozen 1.0.1 wheel was verified in one local user-site CLI/SDK update; that does not update production
+  or put this new summary into that installed package. Final artifacts need verification against final inputs.
+  Keep this entry Unreleased until a maintainer actually authorizes publication; no release date is asserted.
+- Tighten release privacy checks: an e-mail-shaped address no longer bypasses detection through a file-like
+  suffix. Ignore and reject local `.ssh`/`.aws` authentication directories while preserving neutral public
+  examples; cover both rejection and exact-ignore boundaries with synthetic regressions. No runtime, engine,
+  dependency constraint, permission or execution-authority change.
+- Correct both dependency inventories and contribution stage lines for the unreleased 1.0.1 candidate;
+  keep older dated evidence separate from current local checks and the exact release commit's hosted CI.
+- B方案：不实施A′，S1默认目录问题显名保留；说明、诊断文字与元数据窄修外，仅收紧发行工具的隐私准入和ignore边界，不改运行逻辑。
+  补齐中英验收范围，保留原skip、继承及未验边界；
+  旧冻结制品的本机用户安装已核，不代表生产更新、平台发布或旧包包含本次新文字。正式发布前核最终输入与新制品，不改写1.0.0历史。
+
 ## [1.0.0]
 
 The first release. Engine `1.0.0`. The dated sections below record the changes made under this version number on

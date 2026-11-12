@@ -10,9 +10,9 @@ Thank you for your interest in contributing to SoulRun!
 >
 > This policy may be revisited in the future.
 
-> **Stage Status (V1.0.0)**
+> **Stage Status (V1.0.1)**
 >
-> SoulRun's current version: V1.0.0, the first formal version. The processes below describe the *target* development model. Initial decisions are made by AIXP Labs core maintainers; community discussion period scales as the contributor base grows.
+> SoulRun's current version: V1.0.1, an unreleased maintenance candidate; the bundled engine remains 1.0.0. The processes below describe the *target* development model. Initial decisions are made by AIXP Labs core maintainers; community discussion period scales as the contributor base grows.
 
 ## How to Contribute
 
@@ -237,4 +237,4 @@ Copyright 2026 AIXP Labs AIXP.dev | SoulRun.dev
 
 ---
 
-Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.0. www.soulrun.dev
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.1. www.soulrun.dev

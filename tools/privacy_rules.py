@@ -62,4 +62,4 @@ def home_paths(text: str) -> list[tuple[str, int]]:
 def emails(text: str) -> list[tuple[str, int]]:
     """(address, offset) of every e-mail address that is not one of SoulRun's own."""
     return [(m.group(0), m.start()) for m in EMAIL.finditer(text)
-            if m.group(0).lower() not in ALLOWED_EMAILS and not m.group(0).lower().endswith((".png", ".json", ".py"))]
+            if m.group(0).lower() not in ALLOWED_EMAILS]

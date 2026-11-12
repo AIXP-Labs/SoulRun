@@ -31,6 +31,10 @@ env/
 .opencode/
 .cursor/
 
+# Local authentication stores, not public examples such as examples/aws or .aws.example
+.ssh/
+.aws/
+
 # Environment (contains secrets)
 **/.env
 **/.env.*

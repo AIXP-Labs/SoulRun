@@ -194,8 +194,12 @@ def resolve_places(*, agent_dir=None, aiap_dir=None, aisp_dir=None, soulrun_cach
 
 
 def make_cache_dir(places: Places) -> None:
-    """Create the run folder, with its .gitignore - only once a run is about to be prepared. A folder SoulRun makes is
-    readable by its owner only (POSIX; on Windows it keeps the permissions of the folder it is made in)."""
+    """Prepare the folder with the existing 0o700 policy; existing directory permissions are not changed.
+
+    POSIX restricts a new folder to its owner. Windows Python 3.11.10 / 3.12.4 and later minor series can create
+    a protected DACL that excludes a restricted execution token. There is no parent-ACL compatibility fallback.
+    Writing the ignore file is best effort; creation success does not prove that later writes will succeed.
+    """
     cache = places.soulrun_cache_dir
     try:
         cache.mkdir(parents=True, exist_ok=True, mode=0o700)

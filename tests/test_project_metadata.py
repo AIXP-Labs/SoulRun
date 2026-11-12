@@ -29,6 +29,29 @@ def test_release_metadata_uses_project_publisher_identity():
     assert PYPROJECT["project"]["license"] == "Apache-2.0"
 
 
+def test_python_classifiers_and_discussion_link_match_the_supported_metadata():
+    classifiers = PYPROJECT["project"]["classifiers"]
+    for version in ("3.11", "3.12", "3.13", "3.14", "3.15"):
+        assert f"Programming Language :: Python :: {version}" in classifiers
+    urls = PYPROJECT["project"]["urls"]
+    assert urls["Discussions"] == "https://github.com/AIXP-Labs/SoulRun/discussions"
+    assert "Issues" not in urls
+
+
+def test_readme_pair_discloses_the_unfixed_windows_permission_boundary():
+    versions = ("3.11.10", "3.12.4")
+    for name, heading, phrases in (
+        ("README.md", "### Windows run-folder permissions",
+         ("not fixed", "pre-create", "--soulrun-cache-dir", "does not prove")),
+        ("README_CN.md", "### Windows运行目录权限",
+         ("尚未修复", "预建", "--soulrun-cache-dir", "不证明")),
+    ):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        assert heading in text
+        section = text.partition(heading)[2].split("\n### ", 1)[0].split("\n## ", 1)[0]
+        assert all(value in section for value in (*versions, *phrases)), name
+
+
 def test_soulrun_and_its_engine_import_no_network_library():
     """The README promises that SoulRun opens no network connection (Axiom 0 in SoulRun): none of its own modules,
     and none of the engine's - the engine's tools run in the model's shell, outside any socket a test can refuse -
@@ -143,6 +166,19 @@ def test_only_what_git_would_commit_counts_as_soulruns_own(tmp_path):
         (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / name).write_text("x", encoding="utf-8")
     assert [p.relative_to(tmp_path).as_posix() for p in committed_files(tmp_path)] == [".env.example", ".gitignore", "src/a.py"]
+
+
+def test_local_credential_directory_ignore_is_exact_and_keeps_public_examples(tmp_path):
+    shutil.copy2(ROOT / '.gitignore', tmp_path / '.gitignore')
+    for name in ('.ssh/session.json', '.aws/session.json', '.env.example',
+                 '.ssh.example/session.json', '.aws.example/session.json',
+                 'examples/ssh/session.json', 'examples/aws/session.json'):
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('{}', encoding='utf-8')
+    assert [p.relative_to(tmp_path).as_posix() for p in committed_files(tmp_path)] == [
+        '.aws.example/session.json', '.env.example', '.gitignore', '.ssh.example/session.json',
+        'examples/aws/session.json', 'examples/ssh/session.json']
 
 
 def test_generated_files_keep_lf_line_ends_on_every_checkout():

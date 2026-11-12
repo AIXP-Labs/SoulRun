@@ -9,8 +9,9 @@ interpreter by its full path). The program form follows the switches a run would
 resolved as soulrun(...) resolves them. The engine's own environment settings are reported too, read
 the way the engine reads them: SoulRun reads none of them, and CACHE_NUM decides how many runs the engine keeps.
 
-Whether soulrun_cache_dir can be written is tried, not guessed: one file with an unused name is created where the
-folder is (or will be) and removed at once. ``os.access`` cannot tell: on Windows it looks only at the read-only
+Whether an existing soulrun_cache_dir can be written is tried, not guessed: one file with an unused name is created
+and removed at once. For a missing folder, only its nearest existing parent is probed; this does not verify access
+after private creation or prove privacy. ``os.access`` cannot tell: on Windows it looks only at the read-only
 attribute, so a folder its permissions keep closed passes it.
 
 Time zones: when the model's provider says when its usage limit resets and names a zone ("resets 2pm
@@ -453,7 +454,9 @@ def _cache_checks(places, programs: list[Path] | None = None) -> list[Check]:
     if length is not None:
         out.append(length)
     if not data.is_dir():
-        out.append(Check(OK, "soulrun_cache_dir", f"{data} (given by {places.sources['soulrun_cache_dir']}) will be created at the first run"))
+        out.append(Check(OK, "soulrun_cache_dir", f"{data} (given by {places.sources['soulrun_cache_dir']}): "
+                         f"write probe passed for {target}; creation will be attempted at the first run; "
+                         "access to the new folder and its privacy are not verified"))
         return out
     root = data / _select.CACHE_DIRNAME
     runs = [p for p in root.iterdir() if p.is_dir() and p.name.isdigit()] if root.is_dir() else []

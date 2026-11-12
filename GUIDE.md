@@ -1,8 +1,10 @@
 # SoulRun 使用指南
 
-> Python 3.11+ | 零依赖 | SoulRun V1.0.0，引擎 1.0.0 | 运行 AIAP 程序与 AISP 技能
+> Python 3.11+ | 零依赖 | SoulRun V1.0.1，引擎 1.0.0 | 运行 AIAP 程序与 AISP 技能
 
-这一版带着哪个引擎、为它验证过什么、不声称什么，见[发布说明](docs/release-1.0.0.md)。
+当前1.0.1的已验范围、跳过、继承与未验项见[本地验收范围](README_CN.md#soulrun-101-本地验收范围)及[变更记录](CHANGELOG.md#101---unreleased)。
+包仍未发布；S1按B保留未修。已有本机用户安装不代表生产升级，旧制品不含本次新文字。[1.0.0发布说明](docs/release-1.0.0.md)
+只作未变内核的背景及带日期历史，不是1.0.1的新验收结论。
 
 ```bash
 python -m pip install soulrun
@@ -266,11 +268,13 @@ SoulRun 不记这个问题：谁把问题给人看，谁把人的回答带回来
 
 - 里面放着引擎程序（`python_tools` 或 `main.aisop.json`）→ `SOULRUN_CACHE_DIR_HOLDS_AN_ENGINE`（不管是不是第一次）：免得两个引擎共用一批运行。
 - 已经放着别的文件 → `SOULRUN_CACHE_DIR_NOT_EMPTY`，报错里列出挡住的文件名：误把项目目录、留作证据的运行副本指进来时，用户的话会混进别的文件里，最旧的运行还会被轮换删掉。
-- 不是目录、建不出来、写不进去 → `SOULRUN_CACHE_DIR_INVALID`。
+- 不是目录、或创建/检查时捕获到文件系统异常 → `SOULRUN_CACHE_DIR_INVALID`。后续某个工具写入失败的错误由该操作决定，不保证总是同一码。
 
-SoulRun 新建这个目录、或第一次接管一个目录（里面还没有 `.soulrun`）而它没有 `.gitignore` 时，写进一个忽略整个目录的 `.gitignore`
-（两行说明和一行 `*`）：上一次调用建好目录就被打断、或者手工建的空目录，也会补上。之后它就归你：你改掉或删掉 `.gitignore`，SoulRun
-不再动它。新建这个目录时，在 Linux、macOS 上只有自己能读（权限 700，`--doctor` 发现别的用户能读时提醒）；Windows 上沿用所在文件夹的权限。
+SoulRun 新建这个目录、或第一次接管一个目录（里面还没有 `.soulrun`）而它没有 `.gitignore` 时，尝试写进一个忽略整个目录的 `.gitignore`
+（两行说明和一行 `*`）：上一次调用建好目录就被打断、或者手工建的空目录，也会尝试补上。写入是尽力而为，须实际核对文件存在，不能用创建返回
+成功推断后续可写。之后它就归你：你改掉或删掉 `.gitignore`，SoulRun不再动它。新建时在Linux、macOS上限制为所有者权限700，`--doctor`
+发现别的用户可访问时提醒。Windows上保留`0o700`；现代Python可生成受保护DACL，受限令牌可能无法使用。1.0.1不自动继承父ACL，问题尚未修复，
+不改已有权限；预建目录也须核对宿主许可及实际隐私边界。详见[Windows运行目录权限](README_CN.md#windows运行目录权限)。
 新建运行之前就要问人时（5.3），不新建这个目录；目录已经在时，多出来的最多是准备运行时加锁用的 `.soulrun/prepare.lock`（加锁以后才问的
 `NAMED_RUN_MISMATCH`、`DESIGNATED_RUN_UNFINISHED`、`ENGINE_BUILD_MISMATCH`，以及非人回合在这里被拒绝的 `ENGINE_BUILD_MISMATCH` 错误，会留下它），
 和第一次接管时写的 `.gitignore`（加锁之前就写好了）。里面的内容见 README_CN 的「程序和数据是分开的」。
@@ -737,7 +741,7 @@ SOULRUN_TEST_INSTALLED=1 <干净环境>/bin/python -m pytest   # 在只装了安
 - 要和 SoulBot 比对的测试（固定文字、发送层、宿主载入的模块、页脚和政策文档），SoulBot 在旁边时用 SoulBot 本身，不在时用
   `tests/soulbot_samples.json`；SoulBot 改了，用 `python tools/record_soulbot_samples.py` 重新记下（有 SoulBot 时测试会提醒）。
   跳过还可能来自平台权限、历史制品和旧模板适用性；以实际 `-rs` 和 JUnit 为准，不承诺固定只有三项。每项测试最多跑 5 分钟（`pytest-timeout`）。
-- CI（`.github/workflows/ci.yml`）配置为在 Ubuntu 和 Windows 上跑 Python 3.11–3.15，共10项源码测试；另有2项Python3.12包装作业，构建安装包、检查内容、对着装好的安装包跑测试。新增3.15作业尚待远端执行。
+- CI（`.github/workflows/ci.yml`）配置为在 Ubuntu 和 Windows 上跑 Python 3.11–3.15，共10项源码测试；另有2项Python3.12包装作业，构建安装包、检查内容、对着装好的安装包跑测试。准确1.0.1发布提交的12项远端结果仍须单独核验，本地结果和旧版CI不能代替。
   实际跑过的测试结果和日期见 README_CN 的「已验证测试基线」和[发布说明](docs/release-1.0.0.md)：只有那里写明的环境算验证过。
 
 ---

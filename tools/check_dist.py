@@ -42,7 +42,7 @@ RELATIVE_LINK = re.compile(r"\]\((?!https?://|mailto:)([^)\s]+)\)")
 # Folders a package must never carry: caches, run data (the users' own words), kept engines, a repository.
 CACHES = ("__pycache__", ".pytest_cache", ".execution_cache", ".ruff_cache", ".mypy_cache", ".soulrun", ".soulrun_cache",
           ".engine_backups", ".git")
-PRIVATE_DIRS = frozenset({".claude", ".codex", ".gemini", ".opencode", ".cursor", ".vscode", ".idea"})
+PRIVATE_DIRS = frozenset({".claude", ".codex", ".gemini", ".opencode", ".cursor", ".vscode", ".idea", ".ssh", ".aws"})
 LOCAL_PATTERNS = (".venv*", "venv", "venv-*", "env", ".wheel-smoke", ".tox", ".nox",
                   "dist", "build", "release-dist", "release-dist-*", "htmlcov", "*.egg-info", "*.egg")
 PRIVATE_FILES = frozenset({".pypirc", ".netrc", "_netrc", "auth.json", "credentials.json",
@@ -98,9 +98,9 @@ def _privacy(name: str, data: bytes, problems: list[str]) -> None:
         problems.append(f"home-folder path in {name}: {path}")
     for address, _ in privacy_rules.emails(text)[:1]:
         problems.append(f"e-mail address in {name}: {address}")
-    lowered = data.lower()
+    lowered = text.casefold()
     for word in _extra_words():
-        if word.lower() in lowered:
+        if word.decode("utf-8").casefold() in lowered:
             problems.append(f"a word from SOULRUN_PRIVACY_WORDS appears in {name}")
             break
 

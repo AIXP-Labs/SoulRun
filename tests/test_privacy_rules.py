@@ -59,6 +59,12 @@ def test_a_utf16_file_is_read_as_text():
     assert RULES.home_paths(RULES.text_of(data))
 
 
+@pytest.mark.parametrize('suffix', ['py', 'json', 'png'])
+def test_email_shaped_suffixes_are_not_a_bypass(suffix):
+    sample = 'fixture' + '@' + 'example.' + suffix
+    assert RULES.emails(sample) == [(sample, 0)]
+
+
 def test_no_file_that_would_be_committed_holds_a_credential_a_home_folder_or_an_address():
     found = []
     for path in committed_files(ROOT):

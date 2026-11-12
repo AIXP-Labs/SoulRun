@@ -18,6 +18,7 @@ authoritative when several documents describe the same behavior.
 | SoulBot on SoulRun: how its agents and host are wired, and the rules a host keeps | [`guide/02-soulbot-integration.md`](guide/02-soulbot-integration.md) |
 | Host examples | [`examples/README.md`](../examples/README.md) |
 | Release history | [`CHANGELOG.md`](../CHANGELOG.md) |
+| Unreleased 1.0.1: recorded local tests, skips, inheritance and untested scope | [English](../README.md#soulrun-101-local-qualification) and [中文](../README_CN.md#soulrun-101-本地验收范围) |
 | V1.0.0 release notes: the engine it carries, the results verified for it, and what it does not claim | [`release-1.0.0.md`](release-1.0.0.md) |
 | Dated runtime/artifact evidence, skip accounting, inherited cases and untested paths (English and Chinese) | [`verification-1.0.0.md`](verification-1.0.0.md) |
 | What a model session reads | `soulrun()` or the `soulrun` command with no arguments: the guide shipped inside the package |
@@ -134,6 +135,7 @@ Before merging documentation changes:
 | SoulBot 接 SoulRun：代理和宿主怎样接、宿主要守的规矩 | [`guide/02-soulbot-integration.md`](guide/02-soulbot-integration.md) |
 | 宿主示例 | [`examples/README.md`](../examples/README.md) |
 | 发布历史 | [`CHANGELOG.md`](../CHANGELOG.md) |
+| 未发布1.0.1：已记录的本地测试、跳过、继承与未验范围 | [English](../README.md#soulrun-101-local-qualification)与[中文](../README_CN.md#soulrun-101-本地验收范围) |
 | V1.0.0 发布说明：带着的引擎、为它验证过的结果、它不声称的东西 | [`release-1.0.0.md`](release-1.0.0.md) |
 | 带日期的运行头/制品证据、skip核算、继承用例和未验路径（中英） | [`verification-1.0.0.md`](verification-1.0.0.md) |
 | 模型会话读的东西 | `soulrun()` 或不带参数的 `soulrun` 命令：包里自带的使用说明 |

@@ -58,4 +58,4 @@ confidentiality cannot be promised where disclosure is required for safety or la
 
 ---
 
-Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.0. www.soulrun.dev
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.1. www.soulrun.dev

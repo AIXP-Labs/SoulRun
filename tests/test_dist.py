@@ -115,6 +115,16 @@ def test_run_data_or_caches_in_a_wheel_are_reported(checker, tmp_path):
     assert problems == ["the wheel contains a cache or run-data folder"]
 
 
+@pytest.mark.parametrize('directory', ['.ssh', '.aws'])
+def test_local_credential_directories_are_rejected_without_hiding_public_examples(checker, tmp_path, directory):
+    name = 'soulrun/' + directory + '/session.json'
+    problems = _listed(checker.check_wheel(make_wheel(tmp_path, extra={name: '{}'})))
+    assert problems == ['the wheel contains a private or local-configuration folder']
+    assert checker._private_directory(['soulrun-0/' + directory + '/session.json'])
+    assert not checker._private_directory([
+        'examples/' + directory[1:] + '/session.json', directory + '.example/session.json'])
+
+
 @pytest.mark.parametrize("name", ["soulrun/.mypy_cache/x.json", "soulrun/.soulrun_cache/s/turn.json",
                                   ".engine_backups/1.0.0-x/engine_manifest.json", "soulrun/.git/config"])
 def test_every_kind_of_cache_or_kept_engine_in_a_wheel_is_reported(checker, tmp_path, name):
@@ -165,6 +175,17 @@ def test_personal_traces_are_reported(checker, tmp_path, monkeypatch):
     assert sum("e-mail address" in p and address in p for p in problems) == 1
     hit = [p for p in problems if "SOULRUN_PRIVACY_WORDS" in p]
     assert len(hit) == 1 and "d.txt" in hit[0] and "quagga" not in hit[0].lower()      # the word itself is not echoed
+
+
+@pytest.mark.parametrize('encoding', ['utf-8', 'utf-16', 'utf-16-be'])
+def test_extra_identity_words_use_the_supported_text_decoding(checker, tmp_path, monkeypatch, encoding):
+    word = 'synthetic-build-host'
+    monkeypatch.setenv('SOULRUN_PRIVACY_WORDS', word)
+    data = ('built by ' + word.upper()).encode(encoding)
+    if encoding == 'utf-16-be':
+        data = b'\xfe\xff' + data
+    problems = _listed(checker.check_wheel(make_wheel(tmp_path, extra={'soulrun/metadata.txt': data})))
+    assert problems == ['a word from SOULRUN_PRIVACY_WORDS appears in soulrun-0-py3-none-any.whl:soulrun/metadata.txt']
 
 
 def test_a_source_archive_that_records_who_built_it_is_reported(checker, tmp_path):
