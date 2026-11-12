@@ -1,0 +1,29 @@
+{
+  "schema": "contract.v1",
+  "id": "entry",
+  "version": 1,
+  "title": "Session entry obligations",
+  "applies": "main-agent session entry; attached to the existing next-node reply before node work",
+  "sections": [
+    {
+      "id": "entry.source_support_contract",
+      "applies": "source support throughout the main-agent session",
+      "text": "source_verified needs captured original content and support_check, never a URL/search snippet alone. Use unverified if unsupported."
+    },
+    {
+      "id": "entry.report_delivery_contract",
+      "applies": "execution report and final answer delivery",
+      "text": "Engine.execute-report follows the served EXECUTION REPORT rule (v6.25.0 terminal_report): user_summary is the detailed execution report and semantics carries the accounting. The separate complete business answer is delivered by the next node `Engine.final-answer` (v6.25.0 final_user_answer) in its own commit as semantics.final_answer, streamed as `:::answer Engine.final-answer`; neither substitutes for the other, and `Engine.final-answer` has no PLAN block and no node block. Reference first: reuse every required report_part under the served REFERENCE REQUIRED rule. Both referenced and newly written answers satisfy the same FINAL SYNTHESIS rule; reuse saves copying, not analysis. Preserve ready reports' complete substantive content, all decisive quantities/comparisons/conditions, evidence limits, risks, actual writes, exceptions, human decisions and follow-up; not a recap or the last node's answer. All actual main-node contributions matter, with child results through the parent rather than sub-node headings. Reuse complete context; read only missing input_refs. Optional coverage excerpts may link the business answer to its sources; they are not required and not proof of semantic completeness. Python preserves text and supplies evidence states, never authors the answer. Explicit report_parts appendices and old Router.summary caches retain compatibility. Emit returned references exactly, final business answer followed by the evidence appendix on Engine.execute-report; never delete text because it appeared earlier. No extra node or audit round; original reports, child caches and all ACP output remain unchanged."
+    },
+    {
+      "id": "entry.quality_execution_contract",
+      "applies": "reasoning and output quality throughout execution",
+      "text": "No pre-analysis forbids protocol rehearsal, not the domain reasoning required by AISOP. Execute the complete steps and apply input_authority.program_contracts: entry-program and current-module output_mode/shared_constraints are part of the task, not optional metadata. Fetch only missing complete constraints with --read-program-contract and required prior user_messages with --read-input-ref --input-field user_messages; reuse complete unchanged context instead of re-reading per node. A directory or preview is not the complete content. Follow payload_rules QUALITY/EVIDENCE for useful reports and uncertainty propagation. At `Engine.final-answer`, use complete business reports where required; preserve their conclusion conditions, source identities and unresolved conflicts. A short routing receipt is valid; a report node must deliver its analysis, not merely state it was completed. No word-count or tool-call quota is introduced. These rules do not authorize filtering, rewriting or hiding ACP output or thought."
+    },
+    {
+      "id": "entry.loading_mode_contract",
+      "applies": "declared and effective execution modes",
+      "text": "loading_mode is the program's declared identity; execution_loading_mode is the engine-selected execution path. Lite remains a distinct mode, not an alias: it currently borrows the complete normal path, with the same steps, sub-node caches, gates, recovery, quality and delivery. Never rewrite a lite declaration to normal or skip work because it says lite. Follow the reply's node.mode and dispatch; node-mode dispatch is unchanged."
+    }
+  ]
+}

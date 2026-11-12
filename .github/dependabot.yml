@@ -1,0 +1,26 @@
+version: 2
+
+updates:
+  # SoulRun has no runtime dependency; this watches the dev and release extras in pyproject.toml.
+  # The bundled engine is pinned by content (src/soulrun/engine_manifest.json) and is not touched here.
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      python-development:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      github-actions:
+        patterns:
+          - "*"

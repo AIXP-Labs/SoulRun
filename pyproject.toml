@@ -1,0 +1,136 @@
+[build-system]
+requires = ["hatchling>=1.31.0,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "soulrun"
+# The README, with its links made absolute for a package index, comes from tools/pypi_readme.py.
+dynamic = ["version", "readme"]
+description = "SoulRun — the AISOP execution engine as one call: run AIAP programs and AISP skills from any host"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+    { name = "AIXP Labs", email = "noreply@SoulRun.dev" },
+]
+keywords = ["ai", "agent", "aisop", "aiap", "aisp", "execution-engine", "soulrun"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+# SoulRun has no runtime dependencies: the engine and this package use the standard library only.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "coverage[toml]>=7.15.2,<8",
+    # tests/test_typing.py: a host written as the README writes one type-checks against the package (py.typed).
+    "mypy>=1.19.1,<2",
+    "pytest>=9.1.1,<10",
+    "pytest-timeout>=2.4.0,<3",
+    "ruff>=0.16.0,<0.17",
+    # Time-zone data for zoneinfo where the system has none (Windows), so a development environment reads named zones
+    # as a run does. No test needs it: without it the engine falls back to local time and soulrun --doctor warns.
+    "tzdata>=2024.1",
+]
+release = [
+    "build>=1.5.0,<2",
+    "twine>=7.0.0,<8",
+]
+
+[project.urls]
+Homepage = "https://soulrun.dev/"
+Repository = "https://github.com/AIXP-Labs/SoulRun"
+Issues = "https://github.com/AIXP-Labs/SoulRun/issues"
+Changelog = "https://github.com/AIXP-Labs/SoulRun/blob/main/CHANGELOG.md"
+
+[project.scripts]
+soulrun = "soulrun.cli:main"
+
+[tool.hatch.version]
+path = "src/soulrun/__init__.py"
+
+# README.md as the long description, its relative links and anchors written against [project.urls] Repository:
+# on a package index the README stands alone. README.md itself is not changed.
+[tool.hatch.metadata.hooks.custom]
+path = "tools/pypi_readme.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/soulrun"]
+# The engine carries only its runtime files (tools/clean_engine.py); the three patterns below are a guard, the same
+# list tools/sync_engine.py calls "not installed".
+exclude = [
+    "src/soulrun/soulrun_aiap/tests",
+    "src/soulrun/soulrun_aiap/RELEASE*",
+    "src/soulrun/soulrun_aiap/pytest.ini",
+    "**/__pycache__",
+    "**/.pytest_cache",
+    "**/.execution_cache",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/tools",
+    "/examples",                # the tests run the examples
+    "/docs",
+    "/.github",                 # the CI the documentation links to and describes
+    "/README.md",
+    "/README_CN.md",
+    "/GUIDE.md",
+    "/INSTALL.md",
+    "/DEPENDENCIES.md",
+    "/DEPENDENCIES_CN.md",
+    "/CHANGELOG.md",
+    "/CONTRIBUTING.md",
+    "/CONTRIBUTING_CN.md",
+    "/SECURITY.md",
+    "/GOVERNANCE.md",
+    "/CODE_OF_CONDUCT.md",
+    "/LICENSE",
+    "/NOTICE",
+    "/.gitattributes",
+]
+exclude = [
+    "**/__pycache__",
+    "**/.pytest_cache",
+    "**/.execution_cache",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# pytest-timeout (the dev extra): a test that hangs - a subprocess waiting forever - fails after 5 minutes instead of
+# holding the run until CI's job limit. The slowest test today takes well under a minute.
+timeout = 300
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# The bundled engine is not SoulRun's code and is never edited here; the generated wording module is
+# lifted verbatim from SoulBot's agent template.
+extend-exclude = [
+    "src/soulrun/soulrun_aiap",
+    "src/soulrun/_agent_text.py",
+]
+
+[tool.ruff.lint]
+# Same baseline as SoulBot: independent from Ruff's changing default rule set.
+select = ["E4", "E7", "E9", "F", "B004", "B023", "B905", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["RUF012"]
+
+[tool.coverage.run]
+include = ["src/soulrun/*"]
+omit = ["src/soulrun/soulrun_aiap/*"]
+relative_files = true
+
+[tool.coverage.report]
+show_missing = true

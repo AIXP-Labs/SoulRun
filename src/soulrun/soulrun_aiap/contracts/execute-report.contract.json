@@ -1,0 +1,55 @@
+{
+  "schema": "contract.v1",
+  "id": "execute-report",
+  "version": 5,
+  "title": "Execution report",
+  "applies": "Engine.execute-report (and the legacy report nodes)",
+  "sections": [
+    {
+      "id": "execute-report.semantics",
+      "applies": "Engine.execute-report and the legacy report nodes",
+      "placeholders": [
+        "name"
+      ],
+      "text": "SEMANTICS (<<name>>): semantics = {intent, result_summary, functional_status, nodes_skipped[], per_node[]}; functional_status takes the status values and is never PASS while any node of this run is DEGRADED or FAILED. per_node items are exactly {node, material_action, result} - no status, note or other key; the skeleton lists every main node this run committed, all turns included: fill each (sub and engine nodes may be added); every main node is there or in nodes_skipped. Refused: REPORT_SEMANTICS_INVALID, REPORT_SEMANTICS_INCONSISTENT, REPORT_SEMANTICS_INCOMPLETE."
+    },
+    {
+      "id": "execute-report.streams",
+      "applies": "Engine.execute-report and the legacy report nodes",
+      "placeholders": [
+        "name"
+      ],
+      "text": "<<name>> streams too: `:::report <<name>>` and, when explain is \"@host\", `:::explain <<name>>`, each closed by a standalone `:::` before the commit. Unstreamed: full inline first; never \"@host\"."
+    },
+    {
+      "id": "execute-report.report_delivery",
+      "applies": "the legacy report node Router.summary",
+      "text": "REPORT DELIVERY (legacy verbatim attachment): to attach a complete public text as written, add semantics.report_parts = [{ref: <this reply's input_ref>, field: \"user_messages\", message_index: i}] (or field \"user_summary\", no message_index), chosen by the program's meaning, reading the source if needed - never the last or longest node by default, never every receipt. user_summary stays the complete final answer: it synthesizes every material main-node result in readable Markdown sections with sources and local limits. Never wrap public blocks or the answer in added code fences or quotes. Public blocks already shown for a node during this turn do not exempt the final answer: the selected text itself in full, never a pointer such as \"delivered above\" or a self-written execution summary or table in its place."
+    },
+    {
+      "id": "execute-report.execution_report",
+      "applies": "Engine.execute-report",
+      "text": "EXECUTION REPORT (user_summary): execution, not the business answer. Summary >=500 non-whitespace Unicode characters; target 500-2000, >2000 advisory only. State request/outcome, package/version/mode, material actions/results, tools/limits/consequences, delegation/inline/retries, functional vs delivery status, risks and next actions. Fill every main node in semantics.per_node (children through parent). Summary is visible; complete descriptions and machine tables stay SHA-bound in cache, read when opened. No extra summary node/call, truncation or padding. Report/Explain use whole-run execution_facts, Router choices and recovered failures; this node's own commit is still pending. Interpret, do not transcribe: verification limits, authorization scope, artifact purpose, each medium HSAW recommendation. Lead failure with scope/cause, completed work and safe recovery. Never a PASS stub. Model labels are not source counts; never sum forwarded ledgers (label older snapshots). protocol_attempts are not business retries or all provider failures; hashes prove neither operation nor external truth or retrieval; unknowns stay unknown / NOT_EVALUATED; never invent tests, timings, physical calls, delivery or safe deletion. Refused: REPORT_FACTS_INCONSISTENT, EXECUTION_SUMMARY_REQUIRED."
+    },
+    {
+      "id": "execute-report.no_business_answer",
+      "applies": "Engine.execute-report",
+      "text": "NO ANSWER HERE: Engine.execute-report carries no final_answer, report_parts or answer_details - the next node `Engine.final-answer` delivers the answer in its own commit. Refused: REPORT_PART_INVALID, FINAL_ANSWER_INVALID, FINAL_DETAILS_INVALID."
+    },
+    {
+      "id": "execute-report.legacy_synthesis",
+      "applies": "the legacy report node Router.summary",
+      "text": "FINAL SYNTHESIS (legacy Router.summary): user_summary is one detailed, self-contained answer synthesizing ALL actually executed main business nodes - not sub-node headings or only the last report; it preserves material child results through their parent, evidence, decisive data (units, period, basis), comparisons, conditions, risks, unresolved conflicts, actual writes, exceptions and human decisions. Separate confirmed facts from hypotheses and unknowns; success does not erase recovered failures. Offer useful follow-up questions or actions when applicable, without granting permission or executing them. Reuse complete context; read only missing sources. Fill semantics.answer_details.coverage with an exact non-blank excerpt of the answer for each served main node / visit (links content, proves no completeness); optional key_data / comparisons / conditions_limits_risks / follow_up items are {text, answer_excerpt, source_nodes}, concise, their facts kept in the answer too. No machine evidence states, no second full report; report_parts only for an explicitly needed verbatim report or appendix, never instead of this synthesis. No re-reading ritual or word quota."
+    },
+    {
+      "id": "execute-report.cancelled",
+      "applies": "Engine.execute-report after the human cancelled at a gate",
+      "placeholders": [
+        "dropped",
+        "dropped_count",
+        "where"
+      ],
+      "text": "CANCELLED RUN: the human cancelled at <<where>>; <<dropped_count>> planned node(s) did not run: <<dropped>>. Say so in the first lines of the EXECUTION REPORT; keep every node not run in semantics.nodes_skipped (pre-filled); functional_status PARTIAL or FAIL, never PASS; no business work, no question."
+    }
+  ]
+}

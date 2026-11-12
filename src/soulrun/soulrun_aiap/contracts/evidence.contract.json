@@ -1,0 +1,44 @@
+{
+  "schema": "contract.v1",
+  "id": "evidence",
+  "version": 7,
+  "title": "Evidence",
+  "applies": "every node (process, artifact and source shapes); business and sub nodes (evidence attitude, addresses, source support); source repair only after a SOURCE_SUPPORT_INVALID refusal",
+  "sections": [
+    {
+      "id": "evidence.process",
+      "applies": "every node",
+      "text": "PROCESS EVIDENCE: a tool_calls entry that ran a process (a sys.run* step, python_tool_run / bash / shell / powershell / subprocess, any *.py script) redirects its stdout to a new file under <cache_dir>/_proc/ and names it - `python tool.py > <cache_dir>/_proc/<node>.<n>.out` -> stdout_path \"_proc/<node>.<n>.out\" - with the real integer exit_code or the code written to _proc/<node>.<n>.exit. Without that file the call is not evidence."
+    },
+    {
+      "id": "evidence.artifacts",
+      "applies": "every node",
+      "text": "ARTIFACTS: each evidence.artifacts item = {path, kind: file|directory} plus optional note, operation - never a bare string; path exists on disk, forward slashes. Give the writer's file-level receipts by exact path and operation; a directory entry never claims that its members changed."
+    },
+    {
+      "id": "evidence.sources",
+      "applies": "every node",
+      "text": "SOURCES: each evidence.sources item = {url, retrieved_at} or {path: absolute local file}, optional title, source_id, label, tool. retrieved_at is the observed ISO 8601 time with zone, or null - never guessed, never a prose range; never write recorded_at or retrieval_time_basis; leave out a field that does not apply rather than null or a fake URL. A local file's hash proves its bytes, not its meaning. Refused: SOURCE_URL_INVALID, SOURCE_TIME_AUTHORITY_INVALID."
+    },
+    {
+      "id": "evidence.attitude",
+      "applies": "every node except Router.match and Router.cache-setup",
+      "text": "EVIDENCE: keep search snippets, retrieved originals and supported claims apart. Carry uncertainty, source conflicts, missing values and assumptions into every place a conclusion appears, the final answer included, as conditional wording beside it - a blanket disclaimer is not enough. Keep program source IDs and their scope. Never invent verification or treat a committed node as proof. An exact quotation names the original actually read (path or page), never model memory; without one, mark it unverified beside the claim."
+    },
+    {
+      "id": "evidence.address_refs",
+      "applies": "business and sub nodes",
+      "text": "ADDRESS REFERENCES: file output values present verbatim MUST use an address; keep child-address containers in place. Targets: proc:<stdout_path>[#path] (a capture in this payload's tool_calls); input:<node>@<visit>[#field.path] (input_authority.input_refs; field output | vars | user_summary | user_messages); artifact:<n>[#path] (this payload's evidence.artifacts[n]); host:report | host:message[<n>] | host:explain (this node's streamed texts, no path); work:<file>[#path] (your file under <cache_dir>/_work/); evidence:sources (the run's source ledger, no path - evidence.sources may also be one address such as artifact:<n>#sources). Use actual root keys (#items[0].name), not a json prefix. A large new value (a document, ledger, table, record list, matrix or multi-paragraph text of 500 characters or more) is best written to _work/ first and addressed; a small fact found in no file stays inline - never create a file only to address it. Your own summaries, rulings and explanations stay inline, even when they draw on a file. Never an address: output itself, and the user's own words (raw_user_message, user_input, divination_question and the like) - verbatim, inline, never left out. An address never replaces a record, report or file a program step must produce. Examples: \"record\": {\"@ref\": \"proc:_proc/SaveRecord.2.out\"}; \"claims\": {\"@ref\": \"artifact:0#claims\"}; \"advice_text\": {\"@ref\": \"host:message[0]\"}; \"analysis\": {\"@ref\": \"work:A.analysis.json\"}; \"sources\": {\"@ref\": \"evidence:sources\"}. Refused: REF_TARGET_INVALID. Build a required ledger once; before the first commit point output.claims at that existing artifact/work/proc value, never regenerate its rows in the payload or on a retry. The writer's later compaction cannot save already-generated tokens. A reference preserves all rows and source checks, not permission to omit a required artifact or public answer."
+    },
+    {
+      "id": "evidence.source_support",
+      "applies": "a node whose steps or program ask for source verification",
+      "text": "SOURCE SUPPORT: a source_verified claim is a claim object {claim_id, value, source_ids, support_check {performed: true, method: exact_span | numeric_equality | restatement, located_in: <source_id>, evidence_span: <verbatim passage>, result: supported}} - never a scalar label or map; a URL, search snippet or successful commit is not support. Its one evidence.sources item has content_kind original and content_ref = the work: | proc: | artifact: | input: address of the saved original; save an original when fetched and reuse it, never label a search summary or your own reconstruction original. Fill sources and receipts from source_input_template before the first commit. A search_summary / unknown source, or one without both capture fields, supports no source_verified claim. No original within the program budget: unverified, the limit carried into every conclusion and the final answer; derived only for a documented calculation. A verified claim proves only the saved passage, not retrieval authenticity or truth. In public texts name the checked claim_id on the same line (upstream Node@visit/claim_id; totals Node@visit: N source_verified); an unbound label is not proof. Never replay a completed business action to repair a payload. Prioritize decision-relevant originals within the program budget; reuse each capture across claims, not repeated fetches for a higher verified count. Refused: SOURCE_SUPPORT_INVALID. For a dual count use '<Node>@<visit>: source_verified: labelled=N, checked=M' with both counts from that same latest machine proof. Write it as its own plain clause, delimited by Chinese full stops or semicolons; keep introductions, parentheses and table pipes outside that clause. Do not call N checked; disclose demotions separately."
+    },
+    {
+      "id": "evidence.source_repair",
+      "applies": "after a SOURCE_SUPPORT_INVALID refusal (its help) and on --contract; never in payload_rules",
+      "text": "SOURCE REPAIR: a SOURCE_SUPPORT_INVALID error names the rejected field, not a failed retrieval. Repair the payload from the receipts and captures you already have - no trial and error, no new network call, no word quota. INPUT READ: next_node.py --read-input-ref <authorized ref> --input-path a.b[0] reads one digest-bound subtree, without changing the run or loading unrelated report siblings. The projected source_support is only a count summary; its source_support_read retrieves the complete proof. Full original messages and required reports remain mandatory when needed."
+    }
+  ]
+}

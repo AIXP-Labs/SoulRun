@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+release-dist/
+release-dist-*/
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+venv-*/
+env/
+.wheel-smoke/
+.tox/
+.nox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code local config
+.claude/
+.codex/
+.gemini/
+.opencode/
+.cursor/
+
+# Environment (contains secrets)
+**/.env
+**/.env.*
+!**/.env.example
+.pypirc
+.netrc
+_netrc
+auth.json
+credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+id_ecdsa
+*.log
+*.private.*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test / Cache
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+coverage.json
+htmlcov/
+
+# Run data: never part of the repository
+**/.soulrun_cache/
+**/.execution_cache/
+**/.soulrun/
+
+# The engine a newer one replaced (tools/upgrade_engine.py keeps it here, on this machine only)
+.engine_backups/

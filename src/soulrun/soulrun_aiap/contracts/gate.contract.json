@@ -1,0 +1,34 @@
+{
+  "schema": "contract.v1",
+  "id": "gate",
+  "version": 4,
+  "title": "Gates",
+  "applies": "nodes that declare a gate, Router.match's candidates gate, every node that may submit one",
+  "sections": [
+    {
+      "id": "gate.declared",
+      "applies": "a node whose program declares a gate (required or advisory)",
+      "placeholders": [
+        "declared_gate_scope",
+        "gate_fields",
+        "gate_scope_rule"
+      ],
+      "text": "This node declares a human gate: submit <<gate_fields>>; an advisory / conditional gate that did not trigger gets no gate but gate_not_triggered_reason. Leading sys.io.confirm/input/select (also in ASSERT work) remains required with trailing prose; unparseable human IO is PROGRAM_INVALID, never a missing gate. Refused: GATE_REQUIRED. <<declared_gate_scope>> <<gate_scope_rule>>"
+    },
+    {
+      "id": "gate.declared_scope",
+      "applies": "part of gate.declared",
+      "text": "A cancel ends the business work here - Engine.execute-report and Engine.final-answer follow, the remaining nodes do not run - unless this node declares an error route for confirm_rejected."
+    },
+    {
+      "id": "gate.stream",
+      "applies": "a gate node when the host captures gate fences, never a sub-agent",
+      "text": "STREAM THE GATE: write the gate text LAST - after this node's own streamed texts (message / report / explain) and just before the commit - as visible text between a line `:::gate <node id>` and a line `:::`, in Markdown as it should be shown (bold the decisive phrases, `code` for names): the question paragraph (only what must be decided and how the options differ - the findings stay in the Report, never restated); a line `· 说明: …` (the explanation); a line `· 建议: …` (the advice); the options as a table `| 编号 | 选项 | 说明 |` or as numbered lines `1. <label>` - one per option, same order, count and labels as gate.options, the recommended one marked （建议） / (recommended) (the mark goes in the streamed text only; gate.options[].label carries no mark), each with two or three sentences: what it does, its consequence or cost, when to choose it; one closing line `· …` saying how to answer (an exact number, label or intent; other words are retained but require a separate decision, never promise combined answers or an unsupported item-selection grammar). Labels and headers in the user's language (说明 / Explanation / 説明 / 설명; 建议 / Advice / 提案 / 제안). Commit the gate's question, explanation, advice and closing as \"@host\"; options and recommendation stay JSON and are the menu: streamed option lines or a recommended mark that differ never change them, and a gate text that did not arrive is composed from the options."
+    },
+    {
+      "id": "gate.scope",
+      "applies": "every node that may submit a gate",
+      "text": "GATE SCOPE: a human answer - to the program's question or your own doubt, at any node, in any language - is asked only through a gate, never a User Message plus a default; defaults, earlier broad permission and user_gate=false answer nothing, and an answered gate of this occurrence authorizes no other question. Options: unique labels/intents, at least one execute; aliases never authorize; recommendation = the exact intent you would pick (required, never a choice); advice = one non-binding paragraph saying why; explanation = what is decided and how the options differ. A cancel option is the human's refusal of this gate as a whole (kind and intent cancel); declining one optional step (e.g. skip_export) is an execute option whose intent names that skip - a cancel option labelled as a skip is rejected. For graph branches bind each execute option to next_hint: <declared successor> (endNode for normal completion) - the chosen binding decides what runs next; a cancel option carries no next_hint. Refused: GATE_REQUIRED, GATE_SHAPE_INVALID, GATE_CANCEL_INTENT_INVALID, GATE_BRANCH_INVALID."
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+name: CI
+
+'on':
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }} · Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install -e ".[dev]"
+          python -m pip check
+
+      - name: The engine matches its manifest
+        run: python tools/sync_engine.py --check
+
+      - name: Verified source-form release admission and AIAP conformance
+        run: |
+          python tools/sync_engine.py --check-release
+          python src/soulrun/soulrun_aiap/tools/aiap_conformance_check.py src/soulrun/soulrun_aiap
+
+      - name: The slim engine program matches the engine
+        run: python tools/build_engine_node.py --check
+
+      - name: Lint
+        run: python -m ruff check src tests tools examples
+
+      - name: Documentation
+        run: python tools/check_docs.py
+
+      # -rs lists every skipped test with its reason. Without SoulBot beside the repository, SoulBot's side of the
+      # comparisons comes from tests/soulbot_samples.json; only the checks that need SoulBot's files themselves skip.
+      - name: SoulRun tests
+        run: python -m pytest -rs
+
+  # Build the packages, check what is in them, and run the tests against the installed wheel.
+  # Nothing is uploaded anywhere: publishing is done by a maintainer, by hand.
+  package:
+    name: package · ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      # Every version range comes from pyproject.toml (the release extra; the wheel's dev extra below), the one
+      # place Dependabot keeps current: none is written here.
+      - name: Build the wheel and the source archive
+        run: |
+          python tools/extra_requirements.py release > "$RUNNER_TEMP/release-requirements.txt"
+          python -m pip install -r "$RUNNER_TEMP/release-requirements.txt"
+          python -m build
+
+      - name: Check what was built
+        run: |
+          python tools/check_dist.py
+          python -m twine check --strict dist/*
+
+      - name: Install the wheel only (not the source tree), with its test tools
+        run: python -m pip install "$(ls dist/*.whl)[dev]"
+
+      - name: The installed command works
+        run: |
+          soulrun --version
+          soulrun --verify-engine
+
+      - name: SoulRun tests, against the installed copy
+        env:
+          SOULRUN_TEST_INSTALLED: "1"
+        run: python -m pytest -rs

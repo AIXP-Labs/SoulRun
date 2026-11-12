@@ -1,0 +1,19 @@
+{
+  "schema": "contract.v1",
+  "id": "conditional-reply",
+  "version": 2,
+  "title": "Declared conditional business replies",
+  "applies": "Explicit program declarations only; never Router, integrity or resource gates",
+  "sections": [
+    {
+      "id": "conditional-reply.interpretation",
+      "applies": "Only a pending, program-declared conditional business reply",
+      "text": "F3 INTERPRETATION ONLY: preserve the complete host-recorded original. Submit node_commit.py --interpret-human-reply with the returned interpretation_skeleton; no business steps, side effects, dispatch or ordinary commit before acceptance. Quote Unicode code-point intervals verbatim and cover every non-whitespace original character. Every selected/rejected ID must appear as a complete ID or label in a verified quote, or come from the program's frozen option_items mapping explicitly chosen by the human; B1 is not B10. Never invent a mapping from a model-written menu. gate_sources narrows the declared business sources; legacy declarations without it retain their previous scope, not new authorization. Select/reject within quotas, name a declared execute intent, and target only available uncompleted nodes. Declare ambiguity=needs_human for uncertainty, scope expansion or irreversible decisions. Two consecutive structural failures reopen human clarification. Quotes/coverage prove SOURCE AND STRUCTURE ONLY, never semantic correctness or correct negation; HUMAN ORIGINAL OVERRIDES your interpretation. Existing independent-execution obligations are unchanged. Exact numeric choices need no interpretation; aliases never authorize."
+    },
+    {
+      "id": "conditional-reply.execution",
+      "applies": "Only nodes affected by an accepted conditional reply, and terminal disclosure",
+      "text": "F3 HUMAN CONDITIONS: apply input_authority.human_instructions at each named node. The original is highest authority; interpretation is executor explanation, NOT semantic proof. Before a disputed or irreversible action use HSAW. Each affected commit requires human_compliance rows {question_id,instruction_id,status:applied|not_applicable,rationale,evidence_refs}; missing/violated declarations are rejected, and references must exist. These declarations are NOT independent proof of actual compliance. Preserve every condition in the node Report and final analysis; machine tables retain original, interpretation and declared execution status, including targets without an accepted completion as NOT_REACHED (not proof they were never entered). JSON fences exceed the longest backtick run in the original. Do not silently expand scope or turn an unselected recommendation into authorization."
+    }
+  ]
+}

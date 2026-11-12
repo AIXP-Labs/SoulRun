@@ -1,0 +1,155 @@
+SoulRun {version} - runs AISOP programs (AIAP packages and AISP skills); engine {engine_version}.
+
+ONE CALL
+  Python:        import soulrun; ctx = soulrun(user_message="...")
+  Command line:  soulrun --user-message-file <file>      (or --user-message-stdin)
+  Nothing given: this guide. Nothing is created.
+  No words, one program named (aiap= or aisp=): that program is run. A program that needs words asks the
+               human for them; never make words up. No words, both aiap= and aisp=: the human is asked which
+               one (ctx.doubt). No words, only aiap_dir / aisp_dir: this guide.
+
+WHAT COMES BACK
+  ctx.kind   "program"    a run is ready: give ctx.text to the model. If you are the model, follow it.
+             "text_only"  answer with the text only; run no command. A confirmation after an interruption and a
+                          cancel are text_only too; in every program form their text carries no entry block. When
+                          ctx.doubt is set, ctx.text is a question for the human: show it as written and wait.
+                          Each entry of ctx.doubt["options"] says what the choice means: "call" - call again
+                          with the same message and those arguments (one set to None is left out; a user_message
+                          among them is the reply to send); "ask" - the argument set to None must be named first;
+                          "cancel" - do nothing. No run was created and no other program was used. A run left by
+                          another or an unknown engine build is asked about the same way (ENGINE_BUILD_MISMATCH; a
+                          machine turn gets that error instead); a reply of one cancel word ends it when it is of this
+                          engine version, and only that changes it.
+             "guide"      this text.
+  ctx.text        everything the model needs for this turn.
+  ctx.cache_dir   the run this turn belongs to.
+  ctx.entry_mode  how the message was classified (fresh, resume, recovery, terminal, ...).
+  ctx.program_form  for a run: "slim" (the default: ctx.text holds what the turn starts with of the engine
+                  program, each later part comes with the engine reply whose step needs it, and the model runs
+                  engine tools and reads the business program through soulrun commands), "entry_path" (the
+                  model reads the engine program itself - SoulBot's text) or "full" (see the switches below).
+  ctx.system_prompt  the opening instruction that goes with this turn's form: put it where your own was.
+  ctx.slim_fallback  why this turn has the entry-path form instead of the slim one (a slim program that cannot
+                  be built, an earlier slim problem in this conversation), else None. A note about an
+                  interruption keeps the slim form: follow the note first.
+
+CONTINUING
+  When the reply ends at a question, wait for the human, then call again with the answer as
+  user_message and the same session_id. The engine recognises the answer.
+  Never answer a question on the human's behalf.
+
+ARGUMENTS (all optional)
+  session_id   which conversation the message belongs to. Not given: one conversation per agent folder
+               (ctx.session_id says which). One conversation takes one turn at a time: the host queues the rest.
+  cache_dir    which run the message is for. It must be this conversation's unfinished run.
+  aiap_dir, aisp_dir   folders holding many programs. Not given: ./aiap and ./aisp under agent_dir. A folder with
+               its registry script (aiap_list.py, aisp_list.py) is used only through its agent folder: the engine
+               runs that script, with this Python, at every run.
+  aiap, aisp   one designated program: a folder path, its entry file, or a name looked up in the folder above.
+               A designated program is used as designated. If it cannot be found, or the conversation
+               has an unfinished run not created for it, you are asked; another program is never used
+               without the human's choice.
+  agent_dir    the folder that holds the programs (its aiap/ and aisp/). Not given: SOULRUN_AGENT_DIR, else the
+               current folder.
+  soulrun_cache_dir  the folder the runs are kept in. Not given: SOULRUN_CACHE_DIR, else
+               <agent_dir>/.soulrun_cache. A named one is used as it is; it must be new, empty or already
+               SoulRun's. One SoulRun creates carries a .gitignore to reduce accidental inclusion of run data;
+               it does not untrack files, prevent forced inclusion or restrict access. Deleting the folder deletes
+               the runs. (cache_dir is one run inside it.)
+  user_id, channel, model, host_fences, host_tools, human_turn, host_turn_id, origin_type
+               what a host knows about the turn; a host reports its abilities truthfully. A turn that is not
+               the human's (human_turn=False) never answers a gate: at a run waiting at one (WAITING_USER, even
+               after a Stop) it gets HUMAN_REPLY_REQUIRED, and so it does (switch off) at a run whose engine
+               stop was cut off before its index write, or one marked RUNNING that cannot be read then (the
+               run lock a killed process left, for up to two minutes); at a question after a Stop, a restart or
+               a broken connection on a run still RUNNING the engine only records it.
+               Not giving host_tools means sub-agent capability is assumed. A host without managed dispatch
+               must report that fact (on the command line: --host-tool agent=false). This is not a sandbox
+               disabling a model CLI's unrelated native tools.
+  slim_program  on by default: the slim engine program (engine_node.aisop.json) in ctx.text. False (or
+               SOULRUN_SLIM_PROGRAM=false, or --no-slim-program) gives the entry-path form, SoulBot's text.
+  inline_program  experimental, off: hand over the whole main program; it turns the slim form off. Not
+               together with slim_program=True.
+
+FOR HOSTS (from soulrun import host)
+  Every turn: a text_only turn without ctx.doubt goes to the model too. The model writes every public block
+  as one reference line; show the human host.expand_refs(reply, cache_dir=ctx.cache_dir), then call
+  host.after_turn(cache_dir, reply) - it also marks a shown question's menu delivered, and the engine
+  takes no answer to a question asked after a Stop, a restart or a broken connection before that, nor to
+  a gate in a run before its menu is written (an engine stop's only when the main conversation is served
+  it, a business gate's a sub-agent paused at when the main conversation is served it - it calls next-node
+  before presenting that gate, in any host) or its delivery recorded. A sub-agent return report does not write
+  its menu or mark it delivered: the main conversation's next step shows it first.
+  Sub-agent reports are diagnostic, not proof of original-child identity. When identity cannot be established,
+  require explicit permission for a new agent to continue recorded work. Only an execute choice grants it.
+  Cancel and terminate keep their kind and label and grant no replacement; pause does not consume the business
+  gate. Missing or unclear permission requires another question. Fencing an old ticket does not prove its
+  process exited, and unknown external effects must be checked before repeating work.
+  These names refer to option kinds, not guesses from negative wording in a label; declining an export may
+  still be an execute choice that finishes the report, as the exact presented menu states.
+  host.soulrun_cache_dir(agent_dir=...)  the agent's runs: where "the engine folder" was used for runs
+  host.program_root()             the engine's program folder in the package: where it was used for tools
+  host.stop(cache_dir, host_run_id)   the human pressed Stop
+  host.open_question(cache_dir), host.mark_question_delivered(cache_dir)
+                                  a question a run waits on outside the model; the host showed it itself
+  host.interrupted_runs(created_before=...)   after a restart. Switch off (the default; see
+                                  host.resume_interrupted_enabled()): host.open_restart_question(...); when
+                                  OPENED, show the question and mark it delivered (SKIPPED for a run whose
+                                  engine stop was cut off: its next message shows the stop). Switch on:
+                                  host.resume_prompt(cache_dir).
+  host.runner_recovery(host.RecoveryRequest(...))   after a broken connection to the model
+  host.engine("<module>")         any engine module, for hosts that already call one by name
+  host.system_prompt(form)        the opening instruction for a form, before any call (after one: ctx.system_prompt)
+  host.program_view(cache_dir, node=..., field=...)   what soulrun --program prints
+  host.execution_report(link, cache_dir=...)   the complete execution report behind the engine-report: link
+                                  that ends its block (soulrun --report <link> --cache-dir <run>)
+  None of these creates soulrun_cache_dir; the first run does.
+
+ENGINE COMMANDS
+  soulrun(cmd="<name>", cache_dir=...)        command line: soulrun --cmd <name> --cache-dir <dir> ...
+               (every other argument goes to the engine tool; its output and exit code are the tool's - except
+               that SoulRun's own usage errors exit 2, and a reply SoulRun could not print exits 74:
+               SOULRUN_REPLY_NOT_PRINTED)
+  Names: {commands}
+  user_message and cmd cannot be given together.
+  In a slim turn the command line prints the engine's reply whole and first, then [SOULRUN ENGINE NODE: <names>]
+  and the part of the engine program that step needs, once per turn; follow it as part of the program. A part
+  that would not fit under the output cap is named in one line with the command that prints it.
+  soulrun --engine-node <name> [--cache-dir <run>]   a part on request (a group such as Router.match, a section
+               such as node_execution_contract, or a function such as NodeLoop)
+  On a command line no host program shows the human the blocks the engine names by reference lines: you do.
+  After each reply SoulRun prints their text under [SOULRUN FOR THE HUMAN]; print it on the screen, in full.
+  soulrun --expand <reference> --cache-dir <run>     one block's text on request
+  The --user-message-file goes into the run's folder once the turn has its run (--keep-message-file leaves it).
+
+THE BUSINESS PROGRAM
+  soulrun --program --cache-dir <run>            the program the run is bound to, as JSON: main graph, node
+               list, system_prompt, output_mode, tools, params, the size and fingerprint of every field worth
+               fetching (counted as the engine counts its program_contracts) and the names of the small ones
+  ... --node <node> [--doc <file>]               one node's function, the tools it names, the constraints it cites
+  ... --field <field> [--offset N] [--limit N]   one field in full, paged when long (aiap_md.<key> for AIAP.md)
+  In the slim form ctx.text gives the model the exact command line (this interpreter, this package).
+
+WHEN SOMETHING SEEMS MISSING
+  soulrun --doctor [--agent-dir DIR] [--soulrun-cache-dir DIR] [--no-slim-program | --inline-program]
+               checks the engine and its interface, the program form (from those switches, as a run reads
+               them) and the command line it gives the model, the python the model's shell finds (every engine
+               tool in the entry-path form, and sub-agents and a program's own python tools in every form, need
+               it: none on PATH is a FAIL in every form), time-zone data, the engine's own settings (CACHE_NUM:
+               how many runs are kept), the programs, soulrun_cache_dir and (Windows) path length, one line
+               each. It leaves nothing behind and runs no program.
+
+RULES THAT NO COMMAND ENFORCES FOR YOU
+  - A question for the human is shown as written; then stop and wait.
+  - Do the node the engine serves, nothing else; fix exactly what a refusal names.
+  - Write only where the engine tells you to.
+  - Never open an engine or program file with a file tool or a shell read: in the slim form everything in
+    them comes through soulrun (--cmd for the engine's tools and, after their replies, the engine program's
+    parts; --program for the business program).
+
+PRIVACY
+  SoulRun does not encrypt run data. Messages, answers, reports, tool output and terminal history may contain
+  private information; protect the run folder and keep authentication files and raw logs out of source and
+  public reports. Use synthetic examples when sharing. Files being moved or removed do not prove secure erasure.
+  SoulRun itself calls no model or network service; the host, provider and business tools have separate network
+  and retention policies. Human-turn and capability flags must be truthful; they are not authentication.

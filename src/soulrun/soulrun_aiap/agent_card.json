@@ -1,0 +1,69 @@
+{
+  "name": "soulrun_aiap",
+  "version": "1.0.0",
+  "program_id": "dev.soulrun.soulrun_aiap",
+  "protocol": "AIAP V1.0.0",
+  "pattern": "A",
+  "trust_level": 3,
+  "description": "soulrun_aiap V1.0.0: AISOP program executor with a single node protocol (next-node / node-commit), Python-held run state and Python-rendered public blocks.",
+  "capabilities": {
+    "offered": [
+      "aisop_execution",
+      "node_protocol",
+      "machine_owned_state",
+      "python_rendering",
+      "human_gate_detection",
+      "sys_call_permission_precheck",
+      "audited_resume",
+      "crash_recovery",
+      "conformance_check"
+    ],
+    "required": [
+      "file_system"
+    ]
+  },
+  "modules": [
+    {
+      "id": "soulrun_aiap.agent",
+      "file": "agent_engine.aisop.json",
+      "nodes": 6,
+      "critical": true,
+      "idempotent": false,
+      "side_effects": [
+        "file_write"
+      ]
+    },
+    {
+      "id": "soulrun_aiap.main",
+      "file": "main.aisop.json",
+      "nodes": 6,
+      "critical": true,
+      "idempotent": false,
+      "side_effects": [
+        "file_write"
+      ]
+    }
+  ],
+  "limitations": [
+    "normal/lite execute all reached nodes main-inline. node mode selects one executor per main-graph root; descendants stay inline under it. No execution_semantics selector or nested Agent. Same-child gate resume requires trusted native identity and bound parent-session events. One isolated real Chrome graph passed the actual human gate with its original child; this does not certify a complete Creator run, general performance or Provider-level physical totals.",
+    "map / join / context_filter reserved keys are rejected at cache-setup (D6)",
+    "sys.run / sys.code sandboxing is the host's responsibility; the engine only pre-checks permissions and requires evidence"
+  ],
+  "tools": [
+    {
+      "name": "file_system",
+      "required": true,
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": false,
+        "open_world": false
+      }
+    }
+  ],
+  "governance_hash": "fe447f5dc20483e7",
+  "homepage": "https://soulrun.dev",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/AIXP-Labs/SoulRun/blob/main/LICENSE",
+  "copyright": "Copyright 2026 AIXP Labs AIXP.dev | SoulRun.dev"
+}

@@ -1,0 +1,240 @@
+# Contributing to SoulRun
+
+Thank you for your interest in contributing to SoulRun!
+
+> ⚠️ **Contribution Status (Current Stage)**
+>
+> We welcome **discussion through GitHub Issues** at this stage of development.
+>
+> **External Pull Requests are not currently accepted.** If you have a proposal — bug report, feature idea, new host example, or improvement — please open an issue describing it. If we agree it adds value, maintainers will implement it and credit you.
+>
+> This policy may be revisited in the future.
+
+> **Stage Status (V1.0.0)**
+>
+> SoulRun's current version: V1.0.0, the first formal version. The processes below describe the *target* development model. Initial decisions are made by AIXP Labs core maintainers; community discussion period scales as the contributor base grows.
+
+## How to Contribute
+
+### Reporting Issues
+
+- Use [GitHub Issues](https://github.com/AIXP-Labs/SoulRun/issues) to report bugs, suggest features, or propose new examples
+- Report a security vulnerability privately, as [SECURITY.md](SECURITY.md) describes, never in a public issue
+- Include the output of `soulrun --version` (SoulRun's version and the engine's), your OS, the host, and the model CLI tool version
+- Include `soulrun --doctor --json` when a run does not start; review it for private folder names before posting
+- Provide minimal reproduction steps
+- For AISOP / AIAP / AISP-related issues, link to the relevant `.aisop.json` file
+- Never attach run data from `soulrun_cache_dir`: it holds the user's own words
+
+### Discussion-Driven Development
+
+1. Propose discussion via issue
+2. Maintainers evaluate value, feasibility, and Axiom 0 alignment
+3. After consensus, maintainers implement the change
+4. Contributors are credited in commit / release notes
+
+### Proposing a New Host Example
+
+When proposing a new example, include in the issue:
+
+- **Use case** — what the host does around SoulRun
+- **Host type** — script / framework / agent / IDE / terminal session
+- **Model access** — SoulACP, an API client, or another way the host reaches a model
+- **Host doors** — which of `soulrun.host` it needs (restart, reconnect, Stop, ...)
+- **Why** the example is broadly useful
+
+Maintainers will assess and implement if approved.
+
+## Guidelines
+
+### The Engine
+
+**The engine is not edited by hand in this repository.** A newer engine is brought in from its canonical source
+with `tools/upgrade_engine.py`: the source's identity, version, license and contract digests are checked, and its
+runtime files are staged byte for byte into `src/soulrun/soulrun_aiap/` (its tests and release notes stay out):
+
+```bash
+python tools/upgrade_engine.py --from <engine tree> --engine-version <X.Y.Z> --dry-run   # look first
+python tools/upgrade_engine.py --from <engine tree> --engine-version <X.Y.Z>
+```
+
+For a canonical source, `--engine-version` must be the version the source already carries (it is never
+restamped); new engine contents under the version already bundled are refused unless `--same-version` is given.
+Before anything changes, the tool builds `engine_node.aisop.json` from the new engine, checks that the new engine
+takes every call SoulRun makes (one run of a named program, no model) and, when SoulBot's agent template is found
+(beside this repository, or given with `--agent-py`) and still carries the wording, checks the fixed wording
+against it; any problem stops it with nothing changed. Then it keeps the replaced engine under `.engine_backups/`
+(`--restore` puts it back), swaps the new one in, writes its manifest, rebuilds `engine_node.aisop.json`, writes
+the engine version in DEPENDENCIES (both languages) and GUIDE, and lists what is left to run by hand: the tests,
+the package build and check, the documentation check, a CHANGELOG entry and a newly dated test baseline in the
+README.
+
+It does not scrub, restamp or reseal canonical instruction/history strings. Only an explicit `--legacy-clean` uses
+the old development-tree conversion (`tools/clean_engine.py`), and that cleaner refuses a canonical identity. It
+lists every text a model or a human may read that it changed (in a file under `.engine_backups/`; a dry run prints
+them): review them before committing. Do not add a hash exemption to make a failed release check pass.
+
+`tools/sync_engine.py --check-release` verifies the recorded source form, file map and aggregate digests,
+runtime-only contents and privacy. Canonical sources must also pass identity/version, license and contract
+checks; legacy-clean sources must still pass the original history checker. Unknown, contradictory or drifted
+inputs fail without a fallback. AIAP conformance, generated-program and distribution checks remain required.
+See [source-form checks](docs/release-1.0.0.md#source-form-release-checks). An engine bug is fixed in its source
+and brought in, not patched here. Three generated files are not edited by hand either:
+
+- `src/soulrun/_agent_text.py` was generated by `tools/port_agent_text.py`, which lifts the wording from a SoulBot
+  `agent.py` that carries it. SoulBot's current agent template hands every turn to SoulRun and carries none of it:
+  `tools/upgrade_engine.py`, `tools/record_soulbot_samples.py` and the tests recognise such a template, and the
+  module stays as last generated from SoulBot's own wording.
+- `src/soulrun/engine_node.aisop.json` is built from the engine by `tools/build_engine_node.py` (`--check` proves it
+  current). `tools/upgrade_engine.py` rebuilds it and stops when the new engine has a section the arrangement does
+  not place yet: place it in `tools/build_engine_node.py`, run the tool again and review the arrangement it reports.
+- `tests/soulbot_samples.json` holds SoulBot's side of the comparisons (its wording in every case, the reader of
+  the blocks in its send layer, the engine modules its host loads, its footers, policy sections and license), so
+  the tests compare on machines without SoulBot too, such as CI. With SoulBot beside this repository the tests use
+  SoulBot itself and fail when the samples fall behind it: then run `python tools/record_soulbot_samples.py`. When
+  SoulBot's agent template is a SoulRun entry, the wording parts stay as last recorded and only the other parts
+  are compared with SoulBot itself.
+
+A test named `test_engine_today_*` records how the engine behaves now where that differs from
+SoulRun's design. When the engine changes, such a test fails on purpose: update the design notes and the
+test together.
+
+### Quality Standards
+
+- Behavioral changes must include focused regression tests; broaden coverage for
+  shared contracts and user-facing workflows
+- Standard library only: SoulRun has no runtime dependency and must not gain one
+- Errors raised by SoulRun carry a stable code and, when known, the offending field and what was expected
+- Code style: `ruff` (configured in `pyproject.toml`)
+- New and changed Python APIs require Python 3.11+ type hints
+- Line length: the selected Ruff rules do not check it; keep to the length of the surrounding code
+- Docstrings for public functions and classes
+- No wildcard imports
+- No test calls a model: where a model would act, the test sends the engine what a model would send; tests
+  work in pytest's temporary folder and write nothing into the repository
+
+Maintainers validate the same boundaries as the `test` job of `.github/workflows/ci.yml` (Ubuntu and Windows,
+Python 3.11 to 3.15):
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pip check
+python tools/sync_engine.py --check
+python tools/sync_engine.py --check-release
+python src/soulrun/soulrun_aiap/tools/aiap_conformance_check.py src/soulrun/soulrun_aiap
+python tools/build_engine_node.py --check
+python -m ruff check src tests tools examples
+python tools/check_docs.py
+python -m pytest -rs
+```
+
+Coverage of SoulRun's own code (configured in `pyproject.toml`: `src/soulrun`, the engine left out):
+`python -m coverage run -m pytest`, then `python -m coverage report`. This does not measure the tools under
+`tools/`: the configuration includes `src/soulrun` only, and several tool tests run a tool from a temporary copy of
+the repository in another process.
+
+Package changes also require (the `package` job of the same workflow runs these checks on Ubuntu and Windows,
+Python 3.12):
+
+```bash
+python -m pip install -e ".[release]"
+python -m build
+python tools/check_dist.py
+python -m twine check --strict dist/*
+python -m venv <clean env>                                                      # a clean environment
+<clean env>/bin/python -m pip install "dist/soulrun-<version>-py3-none-any.whl[dev]"   # the wheel and its test tools
+<clean env>/bin/soulrun --version
+<clean env>/bin/soulrun --verify-engine
+SOULRUN_TEST_INSTALLED=1 <clean env>/bin/python -m pytest -rs                   # Scripts/ in place of bin/ on Windows
+```
+
+`tools/check_dist.py` fails when the wheel carries anything other than SoulRun's own files and exactly the
+engine files the manifest installs (each with its recorded SHA-256), when a runtime dependency appears, when a
+package holds caches, run data or a secrets file, or when a file holds a credential, a home-folder path or an
+e-mail address outside a short allow-list, or an archive header names a user. Building does not publish:
+uploading a package is done by a maintainer, by hand; no script or workflow in this repository does it.
+
+### Privacy
+
+Files in this repository name no person and no place on one machine: no user names, no home folders, no
+drive-letter paths, no personal e-mail addresses. A test checks SoulRun's own files, `tools/check_docs.py`
+checks the documentation, and `tools/check_dist.py` checks the packages. To have the package check also look
+for additional nonsecret identifiers without adding them to source, pass them at run
+time:
+
+```bash
+SOULRUN_PRIVACY_WORDS="<word>,<word>" python tools/check_dist.py
+```
+
+Shell history and process environments can retain values; never use a real token in this example. Ignore
+rules do not remove tracked files or replace a content review. Keep raw sessions, local provider profiles,
+private keys, logs and build output outside public inputs; public reports should use synthetic examples.
+
+### Packaging and Privacy Review
+
+Build wheel and source archives in an isolated checkout and inspect both member names and file bytes with
+`tools/check_dist.py`. Synthetic archive tests complement an actual build; they do not replace one. Preserve
+legitimate source and resources instead of indiscriminately excluding JSON or data files to hide a leak.
+Keep explicit build exclusions effective without version-control metadata, and use placeholders only in public
+examples. Ignore rules do not sanitize tracked files or historical revisions. Handle suspected disclosure under
+[SECURITY.md](SECURITY.md): issuer revocation or rotation is separate from deleting or quarantining a local file.
+Record the exact build inputs, artifact digests, failures, skips and qualification boundaries. Building and
+passing checks do not authorize publication or deployment.
+
+### Documentation Changes
+
+- Run `python tools/check_docs.py` from the repository root.
+- Keep commands aligned with `.github/workflows/ci.yml` and `pyproject.toml`.
+- Update maintained English/Chinese pairs together.
+- Keep the shared footer: the README pair ends with the AIXP Labs project table,
+  the disclaimer, the license line, and the Axiom 0 block; the policy documents end
+  with the Axiom 0 line and keep SoulBot's section headings (except the few
+  SoulRun words differently or does not need).
+  `python tools/check_docs.py --set-version X.Y.Z` sets SoulRun's version in the
+  package and in the documents' version lines (the footers, the stage lines above,
+  the opening lines of GUIDE and INSTALL) in one step; `tools/upgrade_engine.py`
+  writes the engine's version in DEPENDENCIES (both languages) and GUIDE's opening
+  line. Any other mention of a version in the documents is changed by hand. `tools/check_docs.py`
+  checks both kinds of line, and
+  `tests/test_docs.py` compares the footers and the policy documents' sections
+  with SoulBot's.
+- Date measured test counts and keep them separate from supported-version
+  policy or behavioral guarantees.
+- Do not publish credentials, user data, local absolute paths, run data, or
+  screenshots with private content.
+
+See the [documentation map](docs/README.md) for authoritative sources and
+generated-record boundaries.
+
+### Bilingual Requirement
+
+Keep dated evidence and limitations aligned, not just headings. A CI configuration is not a test result;
+an unchanged version or runtime digest does not mean an old artifact contains a newly edited README.
+Record the affected checks and rebuild into a new directory before qualifying new release artifacts.
+
+The repository suite tests the SDK, CLI and packaging; the independent Engine suite is maintained separately
+and is not shipped in the installed engine. Record which suite actually ran. Review `guide.txt` as caller-facing
+documentation too: it is formatted by the no-argument API/CLI, not generated from `GUIDE.md`. Do not change
+executable contracts, permission semantics or frozen governance fields merely to improve prose.
+
+README, CONTRIBUTING, and DEPENDENCIES are maintained as English/Chinese pairs;
+SECURITY, the documentation map and the release notes (`docs/release-1.0.0.md`)
+contain both languages in one file; GUIDE and INSTALL are written in Chinese;
+GOVERNANCE, CODE_OF_CONDUCT, CHANGELOG, the examples' README
+(`examples/README.md`) and the guides under `docs/guide/` are written in English.
+A change to shared facts must keep both language surfaces aligned. Issues may use
+either language.
+
+## Code of Conduct
+
+By participating, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License of Contributions
+
+By submitting (via issue or any future PR), your contribution is licensed under [Apache License 2.0](LICENSE).
+
+Copyright 2026 AIXP Labs AIXP.dev | SoulRun.dev
+
+---
+
+Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulRun V1.0.0. www.soulrun.dev

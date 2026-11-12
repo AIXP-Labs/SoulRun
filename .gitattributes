@@ -1,0 +1,10 @@
+# The bundled engine is verified byte for byte against src/soulrun/engine_manifest.json.
+# Keep every engine file exactly as tools/upgrade_engine.py brought it in, on every platform.
+/src/soulrun/soulrun_aiap/** -text
+# The generated files and the guide are written with LF and checked byte for byte: keep them LF on every
+# platform, so a Windows checkout with core.autocrlf does not turn them into CRLF.
+/src/soulrun/engine_manifest.json text eol=lf
+/src/soulrun/engine_node.aisop.json text eol=lf
+/src/soulrun/_agent_text.py text eol=lf
+/src/soulrun/guide.txt text eol=lf
+/tests/soulbot_samples.json text eol=lf

@@ -1,0 +1,356 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "user_language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "answer": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "main_node_coverage": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/association"
+      }
+    },
+    "evidence": {
+      "$ref": "#/$defs/records"
+    },
+    "exceptions": {
+      "$ref": "#/$defs/records"
+    },
+    "human_decisions": {
+      "$ref": "#/$defs/records"
+    },
+    "artifacts_changes": {
+      "$ref": "#/$defs/records"
+    },
+    "request_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "key_data": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/detail"
+      }
+    },
+    "comparisons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/detail"
+      }
+    },
+    "conditions_limits_risks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/detail"
+      }
+    },
+    "follow_up": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/detail"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "user_language",
+    "answer",
+    "main_node_coverage",
+    "evidence",
+    "exceptions",
+    "human_decisions",
+    "artifacts_changes"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:soulbot:final-answer:1",
+  "description": "Engine-assembled final artifact. Presence and excerpts do not prove semantic truth or completeness.",
+  "$defs": {
+    "detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answer_excerpt": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "source_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "text",
+        "answer_excerpt",
+        "source_nodes"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "answer_excerpt": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "node",
+        "visit",
+        "answer_excerpt"
+      ]
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coverage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/coverage"
+          }
+        },
+        "request_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "key_data": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/detail"
+          }
+        },
+        "comparisons": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/detail"
+          }
+        },
+        "conditions_limits_risks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/detail"
+          }
+        },
+        "follow_up": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/detail"
+          }
+        }
+      },
+      "required": [
+        "coverage"
+      ]
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record": {
+          "type": [
+            "object",
+            "string"
+          ]
+        }
+      },
+      "required": [
+        "source_ref",
+        "source_sha256",
+        "kind",
+        "record"
+      ]
+    },
+    "records": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_state": {
+          "enum": [
+            "records_present",
+            "none_recorded",
+            "not_applicable",
+            "unknown"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/record"
+          }
+        },
+        "checked_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "unobserved_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "record_state",
+        "items",
+        "checked_scopes",
+        "unobserved_scopes"
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "record_state": {
+              "const": "records_present"
+            },
+            "items": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "record_state": {
+              "enum": [
+                "none_recorded",
+                "not_applicable"
+              ]
+            },
+            "items": {
+              "maxItems": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "record_state": {
+              "const": "unknown"
+            },
+            "unobserved_scopes": {
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "association": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "minLength": 1
+        },
+        "association": {
+          "enum": [
+            "excerpt_present",
+            "not_assessed"
+          ]
+        },
+        "answer_excerpt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "node",
+        "visit",
+        "source_ref",
+        "source_sha256",
+        "association",
+        "answer_excerpt"
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "association": {
+              "const": "excerpt_present"
+            },
+            "answer_excerpt": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          }
+        },
+        {
+          "properties": {
+            "association": {
+              "const": "not_assessed"
+            },
+            "answer_excerpt": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

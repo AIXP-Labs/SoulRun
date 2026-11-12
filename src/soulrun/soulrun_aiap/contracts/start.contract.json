@@ -1,0 +1,17 @@
+{
+  "schema": "contract.v1",
+  "id": "start",
+  "version": 2,
+  "title": "Router.match",
+  "applies": "Router.match",
+  "sections": [
+    {
+      "id": "start.route",
+      "applies": "Router.match",
+      "placeholders": [
+        "gate_fields"
+      ],
+      "text": "Router.match: submit route {package, rationale}; to ask the user which program to run, submit <<gate_fields>> instead of route. Refused: ROUTE_INVALID."
+    }
+  ]
+}

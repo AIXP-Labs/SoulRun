@@ -1,0 +1,438 @@
+{
+ "about": "SoulBot's side of the comparisons in tests/, recorded by tools/record_soulbot_samples.py; do not edit by hand",
+ "agent_py_sha256": "4b435cf157df34bf71e2663fdbb1bf39886d2616dc175b98ae0358a851e23e8d",
+ "interruption_notes": {
+  "nothing to say": {
+   "context": {},
+   "note": null
+  },
+  "a plain run": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh"
+   },
+   "note": null
+  },
+  "the human stopped and wrote something": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_judge": true,
+    "judge_id": "j-1",
+    "allowed": [
+     "continue",
+     "stop",
+     "ask"
+    ],
+    "triggers": [
+     "继续",
+     "停"
+    ],
+    "run_state_at_stop": "RUNNING",
+    "stopped_node": "NLU",
+    "stopped_visit": 1,
+    "human_message": "先停一下",
+    "context_sha256": "abc123",
+    "context": "上下文"
+   },
+   "note": "[RUN STOPPED - JUDGE]\ncache_dir: runs/7\nstop_id: s-1\njudge_id: j-1\nstopped_at: RUNNING / node NLU (visit 1)\nhuman_message: 先停一下\nallowed: continue, stop, ask\ntriggers: 继续, 停\ncontext_sha256: abc123\n[STOP CONTEXT]\n上下文\n[END STOP CONTEXT]\nThe human pressed Stop on this run; the engine kept every byte of run state and the run is NOT cancelled. The human then sent human_message. Decide, from the context above only, whether that message continues THIS run. After reading the entry, FIRST ENGINE ACTION (next_node and node_commit are refused with RUN_STOPPED_BY_HUMAN until then):\npython {ENGINE}/python_tools/stop_decision.py --cache-dir runs/7 --stop-id s-1 --judge-id j-1 --decision continue|ask [--recommendation continue_run|new_task|end_run|none --explanation \"...\" --advice \"...\"] --reason \"...\"\nRules: choose continue ONLY when the message clearly points at this run (asks to go on, adds detail to the current step, or answers a question this run asked). Otherwise choose ask; when you believe the message is clearly a new task, still choose ask and set --recommendation new_task with your explanation. Never answer the stop question yourself. Write --reason, --explanation and --advice in the user's language.\nOn {\"status\":\"CONTINUE\"}: print public_note verbatim as visible text, then run the next_action command it returns and continue the node protocol from the served node (resume.kind re_serve or same_occurrence); if the reply is WAITING_USER, re-present its public prompt and end the turn.\nOn {\"status\":\"GATE\"}: print public_block_ref verbatim on its own line as visible text, then end the turn; do not call next_node.\nOn {\"status\":\"REJECTED\"}: read code, allowed and triggers and submit again with an allowed decision."
+  },
+  "a supply question": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_question": true,
+    "question_source": "supply_doubt"
+   },
+   "note": "[RUN STOPPED - QUESTION]\ncache_dir: runs/7\nstop_id: s-1\nquestion_id: q001-abc\npublic_note: 这一场停在第 3 步。\nThe model supply was interrupted on this run and the engine asks the human whether to continue it once the supply is back. Your whole visible reply is public_note, then this reference line exactly as written: ⟦engine:7/menu.q001-abc.txt⟧ — nothing else. Do NOT read the engine entry and do NOT call next_node or node_commit (they are refused with RUN_STOPPED_BY_HUMAN). End the turn after the reference."
+  },
+  "a restart question": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_question": true,
+    "question_source": "restart_doubt"
+   },
+   "note": "[RUN STOPPED - QUESTION]\ncache_dir: runs/7\nstop_id: s-1\nquestion_id: q001-abc\npublic_note: 这一场停在第 3 步。\nThe host restarted while this run was RUNNING and the engine asks the human whether to continue it. Your whole visible reply is public_note, then this reference line exactly as written: ⟦engine:7/menu.q001-abc.txt⟧ — nothing else. Do NOT read the engine entry and do NOT call next_node or node_commit (they are refused with RUN_STOPPED_BY_HUMAN). End the turn after the reference."
+  },
+  "a stop question": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_question": true,
+    "question_source": null
+   },
+   "note": "[RUN STOPPED - QUESTION]\ncache_dir: runs/7\nstop_id: s-1\nquestion_id: q001-abc\npublic_note: 这一场停在第 3 步。\nThe human pressed Stop on this run and the engine now asks the human whether the next message continues this run. Your whole visible reply is public_note, then this reference line exactly as written: ⟦engine:7/menu.q001-abc.txt⟧ — nothing else. Do NOT read the engine entry and do NOT call next_node or node_commit (they are refused with RUN_STOPPED_BY_HUMAN). End the turn after the reference."
+  },
+  "a stop question without a note": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": null,
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_question": true,
+    "question_source": null
+   },
+   "note": "[RUN STOPPED - QUESTION]\ncache_dir: runs/7\nstop_id: s-1\nquestion_id: q001-abc\npublic_note: -\nThe human pressed Stop on this run and the engine now asks the human whether the next message continues this run. Your whole visible reply is this reference line exactly as written: ⟦engine:7/menu.q001-abc.txt⟧ — nothing else. Do NOT read the engine entry and do NOT call next_node or node_commit (they are refused with RUN_STOPPED_BY_HUMAN). End the turn after the reference."
+  },
+  "a new task": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_new_task": true,
+    "superseded_from": "6"
+   },
+   "note": "[RUN STOPPED - NEW TASK]\ncache_dir: runs/7\nsuperseded_from: 6\nstop_id: s-1\npublic_note: 这一场停在第 3 步。\nThe human answered the stop question of run 6 with \"as a new task\". That run is ended (by the human) and THIS cache is a fresh run whose user_message is the human's original request as the engine recorded it; the chat message (\"2\" or the option label) was only the answer to the stop question. Print public_note verbatim as the first visible text, then execute this fresh run normally from the entry (Router.match first)."
+  },
+  "a held machine message": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_hold": true,
+    "hold_reason": "machine_message",
+    "stop_state": "GATED"
+   },
+   "note": "[RUN STOPPED - HOLD]\ncache_dir: runs/7\nstop_id: s-1\nstop_state: GATED\npublic_note: 这一场停在第 3 步。\nThis session's engine run was stopped by the human and waits for the human's next message. This message came from a schedule or another agent, so it was recorded and not executed. Reply with exactly public_note (translate it to the user's language if that language is not Chinese), then end the turn. Do NOT read the engine entry and do NOT call next_node or node_commit."
+  },
+  "a held human message": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "stop_hold": true,
+    "hold_reason": "human",
+    "stop_state": "GATED"
+   },
+   "note": "[RUN STOPPED - HOLD]\ncache_dir: runs/7\nstop_id: s-1\nstop_state: GATED\npublic_note: 这一场停在第 3 步。\nThis session's engine run was stopped by the human and waits for the human's next message. The host re-entered the run before the human replied. Reply with exactly public_note (translate it to the user's language if that language is not Chinese), then end the turn. Do NOT read the engine entry and do NOT call next_node or node_commit."
+  },
+  "an authorized supply wait": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "supply_authorized": true,
+    "authorized_by": "human"
+   },
+   "note": "[RUN SUPPLY WAIT - AUTHORIZED]\ncache_dir: runs/7\nquestion_id: q001-abc\nauthorized_by: human\npublic_note: 这一场停在第 3 步。\nThe host will re-enter this run by itself when the model supply is back (authorized_by \"switch\" = the SOULBOT_RESUME_INTERRUPTED_RUNS=true setting, \"human:...\" = the human's answer); nothing runs now. Reply with exactly public_note (translate it to the user's language if that language is not Chinese), then end the turn. Do NOT read the engine entry and do NOT call next_node or node_commit."
+  },
+  "a supply hold": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "supply_hold": true
+   },
+   "note": "[RUN SUPPLY WAIT - AUTHORIZED]\ncache_dir: runs/7\nquestion_id: q001-abc\nauthorized_by: -\npublic_note: 这一场停在第 3 步。\nA scheduled or agent message reached this run while the human's authorized wait is on; it was recorded, nothing runs. Reply with exactly public_note (translate it to the user's language if that language is not Chinese), then end the turn. Do NOT read the engine entry and do NOT call next_node or node_commit."
+  },
+  "cancelled after a stop": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "interrupted_cancel": true,
+    "stop_ended": true,
+    "ended_by": "human"
+   },
+   "note": "[RUN CANCELLED]\ncache_dir: runs/7\nstopped_by_human: s-1; ended by: human\npublic_note: 这一场停在第 3 步。\nThe human had pressed Stop on this run first and now ended it with: ''. Print public_note, then acknowledge briefly in the user's language; do not call next-node for that run and do not start new work unless the human asks for something new."
+  },
+  "cancelled": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "interrupted_cancel": true
+   },
+   "note": "[RUN CANCELLED]\ncache_dir: runs/7\nThe human cancelled the interrupted run with: ''. Acknowledge briefly in the user's language; do not call next-node for that run and do not start new work unless the human asks for something new."
+  },
+  "asked to confirm": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "interrupted_confirm": true,
+    "original_request": "第一行\n第二行",
+    "interrupted_node": "CastHexagram"
+   },
+   "note": "[RUN INTERRUPTED - CONFIRM]\ncache_dir: runs/7\ninterrupted_node: CastHexagram\noriginal_request: 第一行 第二行\npending_message: \nAn unfinished run of this session is waiting and SOULBOT_RESUME_INTERRUPTED_RUNS is off. Do NOT execute the pending message, do NOT read the engine entry and do NOT call next-node. Reply with exactly the following reminder (translate it to the user's language if that language is not Chinese), then end the turn:\n上次运行「第一行 第二行」在节点 CastHexagram 中断，尚未完成。回复「继续」续跑，回复「取消」放弃。"
+  },
+  "continued after a stop": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "interrupted_reentry": true,
+    "stop_continue": true,
+    "continued_by": "human",
+    "recorded_choice_label": "继续这一场"
+   },
+   "note": "[RUN INTERRUPTED - RESUMED]\ncache_dir: runs/7\nhuman_note: \nstopped_by_human: s-1; continued by: human\npublic_note: 这一场停在第 3 步。\nReport rule: this node's Report states the human's reply after the stop (''); when the reply answered the stop question, it also states the recorded choice \"继续这一场\". Print public_note verbatim before the first engine call.\nThe previous turn of this run ended without finishing (host restart, power cut or an interrupted turn); the engine kept every byte of run state and re-entered the SAME run. After reading the entry, FIRST ACTION: python {ENGINE}/python_tools/next_node.py --cache-dir runs/7 ; continue the node protocol from the served node (resume.kind re_serve). Do not restart the program and do not treat human_note as a new request unless the served node asks for input; if the reply is WAITING_USER, re-present its public prompt and end the turn."
+  },
+  "resumed after a supply wait": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "interrupted_reentry": true,
+    "supply_resume": true
+   },
+   "note": "[RUN INTERRUPTED - RESUMED]\ncache_dir: runs/7\nhuman_note: \nsupply_resumed: q001-abc\npublic_note: 这一场停在第 3 步。\nPrint public_note verbatim before the first engine call; human_note holds the messages the human sent while the supply was down (may be empty).\nThe previous turn of this run ended without finishing (host restart, power cut or an interrupted turn); the engine kept every byte of run state and re-entered the SAME run. After reading the entry, FIRST ACTION: python {ENGINE}/python_tools/next_node.py --cache-dir runs/7 ; continue the node protocol from the served node (resume.kind re_serve). Do not restart the program and do not treat human_note as a new request unless the served node asks for input; if the reply is WAITING_USER, re-present its public prompt and end the turn."
+  },
+  "re-entered": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "",
+    "user_language": "zh",
+    "interrupted_reentry": true
+   },
+   "note": "[RUN INTERRUPTED - RESUMED]\ncache_dir: runs/7\nhuman_note: \nThe previous turn of this run ended without finishing (host restart, power cut or an interrupted turn); the engine kept every byte of run state and re-entered the SAME run. After reading the entry, FIRST ACTION: python {ENGINE}/python_tools/next_node.py --cache-dir runs/7 ; continue the node protocol from the served node (resume.kind re_serve). Do not restart the program and do not treat human_note as a new request unless the served node asks for input; if the reply is WAITING_USER, re-present its public prompt and end the turn."
+  },
+  "re-entered with a note from the human": {
+   "context": {
+    "cache_dir": "runs/7",
+    "cache_name": "7",
+    "stop_id": "s-1",
+    "public_note": "这一场停在第 3 步。",
+    "question_id": "q001-abc",
+    "public_block_ref": "⟦engine:7/menu.q001-abc.txt⟧",
+    "human_note": "刚才断线了",
+    "user_language": "zh",
+    "interrupted_reentry": true
+   },
+   "note": "[RUN INTERRUPTED - RESUMED]\ncache_dir: runs/7\nhuman_note: 刚才断线了\nThe previous turn of this run ended without finishing (host restart, power cut or an interrupted turn); the engine kept every byte of run state and re-entered the SAME run. After reading the entry, FIRST ACTION: python {ENGINE}/python_tools/next_node.py --cache-dir runs/7 ; continue the node protocol from the served node (resume.kind re_serve). Do not restart the program and do not treat human_note as a new request unless the served node asks for input; if the reply is WAITING_USER, re-present its public prompt and end the turn."
+  }
+ },
+ "language_names": [
+  {
+   "context": {
+    "user_language": "zh"
+   },
+   "name": "中文"
+  },
+  {
+   "context": {
+    "user_language": "en"
+   },
+   "name": "English"
+  },
+  {
+   "context": {
+    "user_language": "ja"
+   },
+   "name": "日本語"
+  },
+  {
+   "context": {
+    "user_language": "ko"
+   },
+   "name": "한국어"
+  },
+  {
+   "context": {
+    "user_language": "fr"
+   },
+   "name": "fr"
+  },
+  {
+   "context": {},
+   "name": "user-language"
+  },
+  {
+   "context": {
+    "user_language": ""
+   },
+   "name": "user-language"
+  },
+  {
+   "context": null,
+   "name": "user-language"
+  }
+ ],
+ "turn_policy_source": "def _engine_turn_policy(system_prompt: str, *, prompt_format: str = 'text') -> tuple[str | None, str]:\n    \"\"\"Exclude only validated clock/turn values, not arbitrary trusted instructions.\"\"\"\n    if prompt_format == 'aisp_host':\n        from .aisp_prompt import policy_fingerprint\n        return policy_fingerprint(system_prompt, _engine_turn_policy)\n    blocks = []\n    normalized = system_prompt\n    for name in ('CURRENT TIME', 'EXECUTION CONTEXT'):\n        matches = list(re.finditer(r'(?m)^\\[' + name + r'\\]\\n(.*?)(?=\\n\\n|\\Z)', system_prompt, re.S))\n        if len(matches) != 1:\n            return None, ''\n        match = matches[0]\n        body = match.group(1)\n        if name == 'CURRENT TIME':\n            try:\n                datetime.fromisoformat(body)\n            except ValueError:\n                return None, ''\n            replacement = '[CURRENT TIME]\\n<runtime-clock>'\n        else:\n            rows = body.splitlines()\n            pairs = [line.split(': ', 1) for line in rows]\n            if any(len(pair) != 2 or not pair[1] for pair in pairs):\n                return None, ''\n            fields = dict(pairs)\n            allowed = {'turn_id', 'cache_dir', 'cache_name', 'trace_id', 'session_id',\n                       'origin_channel', 'entry_mode', 'user_language', 'requested_model'}\n            if len(fields) != len(pairs) or not set(fields) <= allowed \\\n                    or not {'turn_id', 'cache_dir', 'cache_name', 'trace_id', 'session_id'} <= set(fields):\n                return None, ''\n            replacement = '[EXECUTION CONTEXT]\\n' + '\\n'.join(\n                key + ': ' + ('<runtime-turn>' if key in {'turn_id', 'entry_mode'} else value)\n                for key, value in pairs)\n        blocks.append(match.group(0))\n        normalized = normalized.replace(match.group(0), replacement, 1)\n    if '[LOADED AISOP: engine_node.aisop.json]' in system_prompt:\n        try:\n            from soulrun import host as soulrun_host\n            projection = soulrun_host.project_slim_policy(normalized, cache_dir=fields['cache_dir'],\n                                                         entry_mode=fields.get('entry_mode'))\n            if not isinstance(projection, dict) or not isinstance(projection.get('policy_text'), str) \\\n                    or not isinstance(projection.get('runtime_fragment'), str) \\\n                    or not re.fullmatch(r'[0-9a-f]{64}', str(projection.get('source_digest') or '')):\n                return None, ''\n            normalized = projection['policy_text']\n            blocks.append(projection['runtime_fragment'])\n        except Exception:\n            return None, ''\n    if '[EXECUTE ENGINE ENTRY]\\n' not in system_prompt:\n        return None, ''\n    return hashlib.sha256(normalized.encode()).hexdigest(), '\\n\\n'.join(blocks)",
+ "host_modules": [
+  "checkpoint_recovery",
+  "lib.dispatch_resource_context",
+  "lib.engine_core",
+  "lib.menu_history",
+  "lib.partial_commit",
+  "lib.render",
+  "lib.run_store",
+  "lib.stop_flow",
+  "lib.stop_state",
+  "lib.supply_flow",
+  "prepare_cache",
+  "public_delivery_observer",
+  "user_gate_audit"
+ ],
+ "readme_footers": {
+  "README.md": "## AIXP Labs [aixp.dev](https://aixp.dev)\n\nAIXP Labs develops and maintains the following core projects:\n\n| Project | Description | Website |\n|---------|-------------|---------|\n| [HSAW](https://hsaw.dev) | Human Sovereignty and Wellbeing — Axiom 0 white paper (foundation) | hsaw.dev |\n| [AIZP](https://aizp.dev) | AI Zenith-Zero Protocol — runtime behavioral alignment | aizp.dev |\n| [AIIP](https://aiip.dev) | AI Intent Protocol — governed intent trees, priorities and feedback | aiip.dev |\n| [AIKP](https://aikp.dev) | AI Knowledge Protocol — long-term knowledge organization, navigation and governance | aikp.dev |\n| [AIJP](https://aijp.dev) | AI Job Protocol — schedulable work trees and job graphs | aijp.dev |\n| [AINP](https://ainp.dev) | AI Neogenesis Protocol — governable generation projects: plan + content + evidence | ainp.dev |\n| [AILP](https://ailp.dev) | AI List Protocol — agent discovery and capability advertising | ailp.dev |\n| [AIVP](https://aivp.dev) | AI Value Protocol — international commerce, crypto asset settlement | aivp.dev |\n| [AIRP](https://airp.dev) | AI RMB Protocol — Mainland China commerce, RMB licensed settlement | airp.dev |\n| [AIBP](https://aibp.dev) | AI Bot Protocol — social communication and trust | aibp.dev |\n| [AIAP](https://aiap.dev) | AI Application Protocol — governance and compliance | aiap.dev |\n| [AISP](https://aisp.dev) | AI Skill Protocol — directory packages with a canonical AISOP skill entry and enforceable contract bindings | aisp.dev |\n| [AISOP](https://aisop.dev) | AI Standard Operating Protocol — flow program definition | aisop.dev |\n| [AIXPStore](https://aixpstore.dev) | Official marketplace for AIAP programs and AISP skills — discover, publish, and distribute AI capabilities | aixpstore.dev |\n| [SoulSkill](https://soulskill.dev) | AISP skill reference library & multi-CLI plugin distribution | soulskill.dev |\n| [SoulAgent](https://soulagent.dev) | Drop-in AI agent invoked directly by any CLI / SDK / IDE | soulagent.dev |\n| [SoulBot](https://soulbot.dev) | AI agent runtime & orchestration framework (scheduling, agent-spawn, inter-agent comms) **(this project)** | soulbot.dev |\n| [SoulRun](https://soulrun.dev) | AISOP execution engine as one call — runs AIAP programs and AISP skills for any host | soulrun.dev |\n| [SoulACP](https://soulacp.dev) | Adapter library — bridging CLI tools and LLM providers | soulacp.dev |\n\n---\n\n## ⚠️ Disclaimer\n\nThis software is **experimental** and provided for **research and educational purposes only**. Not intended for production use. Use at your own risk. The authors assume no liability for any damages arising from the use of this software. See [LICENSE](LICENSE) for full terms (Apache 2.0).\n\n---\n\n## License\n\n[Apache License 2.0](LICENSE) - Copyright 2026 AIXP Labs AIXP.dev | SoulBot.dev\n\n---\n\nAlign Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. <www.soulbot.dev>\n\n<a id=\"alignment-philosophy\"></a>\n\n## ⚓ Alignment & Philosophy\n\n### Axiom 0: [HSAW | Human Sovereignty and Wellbeing](https://hsaw.dev)\n\n- **No HITL, HSAW.**\n  *Human Sovereignty and Wellbeing is Axiom 0, requiring no hypocritical human-in-the-loop.*\n- **No w.a.s.h, Real h.s.a.w.**\n- **人非蝼蚁，人为道。**\n- **We are not beggars. We the People.**\n",
+  "README_CN.md": "## AIXP Labs [aixp.dev](https://aixp.dev)\n\nAIXP Labs 开发并维护以下核心项目：\n\n| 项目 | 描述 | 网站 |\n|------|------|------|\n| [HSAW](https://hsaw.dev) | 人类主权与福祉 —— Axiom 0 白皮书（基石） | hsaw.dev |\n| [AIZP](https://aizp.dev) | AI Zenith-Zero Protocol —— 运行时行为对齐 | aizp.dev |\n| [AIIP](https://aiip.dev) | AI Intent Protocol（AI 意图协议）—— 意图树治理、优先级与反馈 | aiip.dev |\n| [AIKP](https://aikp.dev) | AI Knowledge Protocol（AI 知识协议）—— 长期知识组织、导航与治理 | aikp.dev |\n| [AIJP](https://aijp.dev) | AI Job Protocol（AI 作业协议）—— 可调度的工作树与作业图 | aijp.dev |\n| [AINP](https://ainp.dev) | AI Neogenesis Protocol（AI 创生协议）—— 可治理的生成项目：计划 + 内容 + 证据 | ainp.dev |\n| [AILP](https://ailp.dev) | AI List Protocol —— agent 发现与能力广告 | ailp.dev |\n| [AIVP](https://aivp.dev) | AI Value Protocol —— 国际商务、加密资产结算 | aivp.dev |\n| [AIRP](https://airp.dev) | AI RMB Protocol —— 中国大陆商务、人民币持牌结算 | airp.dev |\n| [AIBP](https://aibp.dev) | AI Bot Protocol —— 社交通信与信任 | aibp.dev |\n| [AIAP](https://aiap.dev) | AI Application Protocol —— 治理与合规 | aiap.dev |\n| [AISP](https://aisp.dev) | AI Skill Protocol —— 目录式技能包，以 AISOP 技能入口和可执行契约绑定为核心 | aisp.dev |\n| [AISOP](https://aisop.dev) | AI Standard Operating Protocol —— 流程程序定义 | aisop.dev |\n| [AIXPStore](https://aixpstore.dev) | AIAP 程序与 AISP 技能官方市场 —— 发现、发布和分发 AI 能力包 | aixpstore.dev |\n| [SoulSkill](https://soulskill.dev) | AISP 技能参考库 & 多 CLI 插件分发 | soulskill.dev |\n| [SoulAgent](https://soulagent.dev) | 任何 CLI / SDK / IDE 直接调用的 drop-in AI agent | soulagent.dev |\n| [SoulBot](https://soulbot.dev) | AI agent 运行时 & 自编排框架（定时、建 agent、agent 间通信） **（本项目）** | soulbot.dev |\n| [SoulRun](https://soulrun.dev) | 一个调用的 AISOP 执行引擎 —— 为任何宿主运行 AIAP 程序与 AISP 技能 | soulrun.dev |\n| [SoulACP](https://soulacp.dev) | 适配库 —— 桥接 CLI 工具与 LLM 提供方 | soulacp.dev |\n\n---\n\n## ⚠️ 免责声明\n\n本软件为**实验性**软件，仅供**研究和教育用途**。不适用于生产环境。使用风险由用户自行承担。作者对因使用本软件造成的任何损害不承担责任。完整条款见 [LICENSE](LICENSE)（Apache 2.0）。\n\n---\n\n## 许可证\n\n[Apache License 2.0](LICENSE) - Copyright 2026 AIXP Labs AIXP.dev | SoulBot.dev\n\n---\n\nAlign Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. <www.soulbot.dev>\n\n<a id=\"values-philosophy\"></a>\n\n## ⚓ 价值观与哲学 (Alignment & Philosophy)\n\n### Axiom 0: [HSAW | Human Sovereignty and Wellbeing](https://hsaw.dev)\n\n- **No HITL, HSAW.**\n  *人类主权与福祉是第零公理，无需虚伪的人机协同。*\n- **No w.a.s.h, Real h.s.a.w.**\n- **人非蝼蚁，人为道。**\n- **We are not beggars. We the People.**\n"
+ },
+ "policy_documents": {
+  "CODE_OF_CONDUCT.md": {
+   "headings": [
+    "## Our Pledge: Axiom 0",
+    "## Standards",
+    "## Scope",
+    "## Enforcement Responsibilities",
+    "## Reporting"
+   ],
+   "last_line": "Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. www.soulbot.dev"
+  },
+  "CONTRIBUTING.md": {
+   "headings": [
+    "## How to Contribute",
+    "### Reporting Issues",
+    "### Discussion-Driven Development",
+    "### Proposing a New Agent Example",
+    "## Guidelines",
+    "### Quality Standards",
+    "### Packaging and Privacy Review",
+    "### AISOP / AIAP Contributions",
+    "### Documentation Changes",
+    "### Bilingual Requirement",
+    "## Code of Conduct",
+    "## License of Contributions"
+   ],
+   "last_line": "Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. www.soulbot.dev"
+  },
+  "CONTRIBUTING_CN.md": {
+   "headings": [
+    "## 如何贡献",
+    "### 报告 Issue",
+    "### 讨论驱动开发",
+    "### 提议新代理示例",
+    "## 贡献原则",
+    "### 质量标准",
+    "### 打包与隐私审查",
+    "### AISOP / AIAP 贡献",
+    "### 文档变更",
+    "### 双语要求",
+    "## 行为准则",
+    "## 贡献的许可"
+   ],
+   "last_line": "Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. www.soulbot.dev"
+  },
+  "GOVERNANCE.md": {
+   "headings": [
+    "## The Tripartite Chain",
+    "### 1. The Seed Layer (`aisop.dev`)",
+    "### 2. The Authority Layer (`aiap.dev`)",
+    "### 3. The Host Runtime Layer (`soulbot.dev`)",
+    "## Axiom 0 Immutability",
+    "## Versioning",
+    "## Protocol Steering",
+    "### Decision Process",
+    "## Release Evidence and Authorization",
+    "## Communication"
+   ],
+   "last_line": "Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. www.soulbot.dev"
+  },
+  "SECURITY.md": {
+   "headings": [
+    "## Reporting a Vulnerability",
+    "## Scope",
+    "## Handling a Suspected Disclosure",
+    "## Supported Versions",
+    "## Deployment Baseline",
+    "## 报告漏洞",
+    "## 范围",
+    "## 疑似泄露的处置",
+    "## 支持版本",
+    "## 部署基线"
+   ],
+   "last_line": "Align Axiom 0: Human Sovereignty and Wellbeing. Version: SoulBot V1.0.0. www.soulbot.dev"
+  }
+ },
+ "license_as_soulruns_sha256": "2da71b3c693a8018130ccc2479b53044f6169f53b49842594db67833c7578bb5"
+}

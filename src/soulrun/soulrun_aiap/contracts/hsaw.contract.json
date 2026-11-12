@@ -1,0 +1,99 @@
+{
+  "schema": "contract.v1",
+  "id": "hsaw",
+  "version": 5,
+  "title": "HSAW doubt gate",
+  "applies": "every node except Engine.execute-report and Engine.final-answer",
+  "sections": [
+    {
+      "id": "hsaw.doubt_gate",
+      "applies": "every node except Engine.execute-report and Engine.final-answer",
+      "text": "HSAW DOUBT GATE: never decide or fix these yourself - record each in hsaw_items: doubt (always critical; intent / authority / scope / effect unclear, equal candidates, ambiguous reply), problem (the program does not say what to do), bug (program / engine / tool wrong, with evidence). Not an item: what the program handles itself (retries, fallbacks, on_error), your refused commit. Never deviate from the program text: follow it, file the objection as medium; critical only if following is unsafe or impossible. critical = FREEZE_NOW (this commit carries the gate with resume_boundary) or HARD_FAIL (status FAIL, no error route); medium = ADVISE (recommendation required; continue); low = REPORT. Unsure: one level up (classification_uncertain + escalated_from). Irreversible or authorization / sovereignty / audit / safety = critical. Before an irreversible write or delete, read the target first; content there that the program does not account for is a problem item (critical): do not write. Fields: hsaw_item_example; bug needs 5 extras. Refused: HSAW_*. ADVISE never authorizes changing the declared rule. A genuine ambiguity over authority, scope or effect that changes the result is doubt: freeze for human choice, not a self-approved medium exception. Do not invent a doubt when the explicit rule already decides. Verified prior-decision conflicts reopen a human gate; no automatic repair.",
+      "example": {
+        "status": "PARTIAL",
+        "steps": {
+          "done": [
+            "step1"
+          ],
+          "remaining": [
+            "step2"
+          ],
+          "not_applicable": []
+        },
+        "hsaw_items": [
+          {
+            "category": "doubt",
+            "severity": "critical",
+            "classification_uncertain": false,
+            "escalated_from": null,
+            "impact_classes": [
+              "behavior"
+            ],
+            "disposition": "FREEZE_NOW",
+            "title": "Export format unclear",
+            "description": "The user asked to export the report; the program offers PDF and Markdown and names no default.",
+            "evidence_refs": [
+              "input:NLU@1#output"
+            ],
+            "reversible": true,
+            "classification_rationale": "Two equal candidates: only the user can choose.",
+            "recommendation": "export_pdf"
+          },
+          {
+            "category": "bug",
+            "severity": "medium",
+            "classification_uncertain": false,
+            "escalated_from": null,
+            "impact_classes": [
+              "compatibility"
+            ],
+            "disposition": "ADVISE",
+            "title": "Exporter stamps an old version",
+            "description": "tools/export.py writes version 1.0 into the report while the package is 1.2.",
+            "evidence_refs": [
+              "proc:_proc/Draft.1.out"
+            ],
+            "reversible": true,
+            "classification_rationale": "Only a label is stale; continuing is safe.",
+            "recommendation": "Fix the constant through a Creator evolution.",
+            "scope": "target_aiap",
+            "affected_files": [
+              "tools/export.py"
+            ],
+            "touches_sovereignty_toolset": false,
+            "affects_sovereignty_markers": false,
+            "proposed_fix": "Read the version from agent_card.json."
+          }
+        ],
+        "gate": {
+          "question": "Export the report as PDF or Markdown?",
+          "options": [
+            {
+              "kind": "execute",
+              "label": "PDF",
+              "intent": "export_pdf",
+              "note": "Writes report.pdf."
+            },
+            {
+              "kind": "execute",
+              "label": "Markdown",
+              "intent": "export_markdown",
+              "note": "Writes report.md."
+            },
+            {
+              "kind": "cancel",
+              "label": "Cancel",
+              "intent": "cancel",
+              "note": "Nothing is exported; the run ends with its report."
+            }
+          ],
+          "closing": "Reply with a number or a label.",
+          "recommendation": "export_pdf",
+          "advice": "PDF keeps the layout for sharing.",
+          "explanation": "The program allows both formats; the request names neither.",
+          "resume_boundary": "Stops before step2 (the export); continues in the chosen format after the answer."
+        }
+      }
+    }
+  ]
+}

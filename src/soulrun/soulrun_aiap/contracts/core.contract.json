@@ -1,0 +1,111 @@
+{
+  "schema": "contract.v1",
+  "id": "core",
+  "version": 6,
+  "title": "Commit core",
+  "applies": "every node: the payload skeleton, steps, status, tool calls, anomalies, JSON text, the public texts and how they stream (not at the answer node), sys steps, accepted keys and submission",
+  "sections": [
+    {
+      "id": "core.skeleton",
+      "applies": "every node",
+      "text": "SKELETON: start from payload_skeleton and keep every key it has; fill output (non-empty string or object), user_summary (non-empty), evidence (the skeleton's object), user_messages and anomalies (arrays of strings). Every public text is in user_language. Refused: SCHEMA_INVALID."
+    },
+    {
+      "id": "core.steps",
+      "applies": "every node",
+      "placeholders": [
+        "keys"
+      ],
+      "text": "STEPS: steps.done + steps.remaining + steps.not_applicable = exactly <<keys>>; remaining = [] except with FAIL, or PARTIAL / DEGRADED with a gate; not_applicable only for a real conditional exemption, never lack of time. Refused: STEPS_NOT_CLOSED."
+    },
+    {
+      "id": "core.status",
+      "applies": "every node",
+      "text": "STATUS: PASS | DEGRADED | PARTIAL | FAIL; DEGRADED needs a non-null degraded_reason; FAIL may add error_type."
+    },
+    {
+      "id": "core.tool_calls",
+      "applies": "every node",
+      "text": "TOOL CALLS: each evidence.tool_calls item = {tool, purpose} plus optional step, sys_call - no result / target / args / output keys, no null for a field that does not apply; never list protocol calls (next-node, node-commit, gate-answer)."
+    },
+    {
+      "id": "core.anomalies",
+      "applies": "every node",
+      "text": "ANOMALIES: record failed attempts/receipts and recovery where it happened; later Report names origin, never rewrite caches. Count independent rejections, not repeated reports/codes/stdout. REPORT_NOT_RECEIVED: missing capture, cause unknown without evidence."
+    },
+    {
+      "id": "core.no_timings",
+      "applies": "every node",
+      "text": "ENGINE VALUES: never write what the engine measures or repairs itself - hashes, bytes, stdout_sha256 / stdout_bytes / stdout_excerpt, verification_scope, the human_decisions records (only their effect is yours) - it records its own; no self-reported execution clocks (started_at, ended_at, elapsed_ms, active_elapsed_ms, human_wait_ms, committed_at) or execution durations in user_summary / output / user_messages. Source-observed data times such as as_of / retrieved_at may be copied with provenance; never invent missing times. Refused: UNTRUSTED_TIMING_CLAIM."
+    },
+    {
+      "id": "core.json_text",
+      "applies": "every node",
+      "text": "JSON TEXT: write characters directly in JSON strings - no \\uXXXX escapes, no Markdown backslash escapes. Refused: JSON_INVALID (a broken \\u escape or other invalid JSON)."
+    },
+    {
+      "id": "core.user_message",
+      "applies": "every node except the answer node",
+      "text": "USER MESSAGE (user_messages): everything this node's program gives the user, one item per text, shown as written under **User Message:** - generated content (advice, interpretation, result, receipt) in full, quoted program texts verbatim with placeholders filled, Markdown and emoji kept. Never summarise, compress, rewrite, merge, reorder or deduplicate it or leave it only in output, a _work file or an address; the Report never replaces it. Not a message: the triggering request, a gate question. Declare it in user_message, each item with its step (see user_message_hints). Refused: USER_MESSAGE_REQUIRED, USER_MESSAGE_DECISION_*, USER_MESSAGE_STEP_*."
+    },
+    {
+      "id": "core.report",
+      "applies": "every node except the answer node",
+      "text": "REPORT (user_summary), shown as written under **Report:** after the quoted request: lead with the material result, then the reasons, decisive evidence and limits - evidence-backed subheadings, real tables / lists / links, decisive quantities. A result-bearing node writes at least two substantive sentences; a routing or bookkeeping node stays concise, in readable paragraphs. Never a one-line status stub, semicolon-delimited audit prose, raw JSON or key=value dumps, escaped \\n or a whole-body code fence."
+    },
+    {
+      "id": "core.stream_report",
+      "applies": "every node except the answer node, when the host captures only the Report",
+      "text": "STREAM THE REPORT: submit complete inline first, or before commit stream complete visible Report in standalone `:::report <node id>` / `:::` lines, then user_summary=\"@host\". REPORT_NOT_RECEIVED: resubmit inline without business replay."
+    },
+    {
+      "id": "core.stream_texts",
+      "applies": "every node except the answer node, when the host captures message / explain fences",
+      "text": "STREAM YOUR TEXTS: submit complete inline values on the first attempt unless already streamed; \"@host\" is only for streamed text. For streams, use standalone `:::<kind> <node id>` / `:::` lines in this order: `:::message <node id>` (ONE fence holding every User Message item, whenever user_message.has is true), `:::report <node id>` (always), `:::explain <node id>`. Then commit \"user_messages\": [\"@host\"], \"user_summary\": \"@host\", \"explain\": \"@host\". Missing Report is refused (REPORT_NOT_RECEIVED): resubmit inline without replay. A message or Explain that did not arrive is lost (message dropped, Explain recorded empty)."
+    },
+    {
+      "id": "core.subagent_texts",
+      "applies": "a node served to a spawned sub-agent (replaces the STREAM rule)",
+      "text": "SUB-AGENT TEXTS: your stream is not captured - no fences, no \"@host\"; host: addresses are unavailable here (proc: / input: / artifact: / work: / evidence: addresses still work). Write every text complete and inline: the Report in user_summary, User Message items in user_messages, the Explain in explain, a gate's question / explanation / advice / closing in its fields; return the commit result - the main agent shows your block from it. Refused: HOST_TEXT_UNAVAILABLE_SUBAGENT."
+    },
+    {
+      "id": "core.explain",
+      "applies": "every node except the answer node",
+      "text": "EXPLAIN (explain): concise, normally one or two substantive sentences; expand for material judgment, deviation, risk or anomaly: this node's output and what it means for the whole run; the upstream dependency and the downstream consumer; any risk, anomaly or point for human attention (or state that there is none); why the next node follows. The Report is authoritative where they differ; never repeat it or disclose private chain-of-thought."
+    },
+    {
+      "id": "core.final_answer_frame",
+      "applies": "every node except the answer node",
+      "text": "FINAL ANSWER: at Router.summary / DirectReply, user_summary is the body of the final answer - never start it with 🤖 or add guards, the AI disclosure, a footer or Axiom lines."
+    },
+    {
+      "id": "core.sys_steps",
+      "applies": "a node with sys.* steps",
+      "placeholders": [
+        "sys_keys"
+      ],
+      "text": "SYS STEPS: each done sys.* step (<<sys_keys>>) has one evidence.tool_calls entry with step=<key> (or sys_call=<name>). Refused: EVIDENCE_MISSING_FOR_SYS_STEP."
+    },
+    {
+      "id": "core.sys_assert",
+      "applies": "a node with sys.assert steps",
+      "placeholders": [
+        "assert_keys"
+      ],
+      "text": "SYS ASSERT: each done sys.assert step (<<assert_keys>>) has an evidence.sys_assert_results item {step, expression, context_snapshot, result}, and result equals the engine's own evaluation. Refused: ASSERTION_RESULT_MISMATCH."
+    },
+    {
+      "id": "core.top_level_keys",
+      "applies": "every node",
+      "placeholders": [
+        "accepted"
+      ],
+      "text": "Top-level keys accepted for this node: <<accepted>>; no other key, never a machine-owned one (position, visit, ordinal, elapsed, sha256, ticket, claims, accounting); dispatch_fallback only when the reply's dispatch says the spawn budget is exhausted. Refused: MACHINE_FIELD_REJECTED."
+    },
+    {
+      "id": "core.submit",
+      "applies": "every node",
+      "text": "SUBMIT: node_commit.py --payload-stdin with a heredoc / here-string; --payload-file (UTF-8) is for hosts that cannot pipe. USER WORDS: the user's own words reach a command only as data - a quoted heredoc (<<'EOF') or a payload file, never typed into a command-line argument or python -c code; a program step that takes them as an argument gets `\"$(cat <<'EOF'`, then the words, `EOF` and `)\"`, each on its own line."
+    }
+  ]
+}

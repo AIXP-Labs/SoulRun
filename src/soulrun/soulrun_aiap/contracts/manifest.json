@@ -1,0 +1,20 @@
+{
+  "schema": "contracts_manifest.v1",
+  "note": "sha256 of every contract file; checked on the first load",
+  "files": {
+    "core.contract.json": "c7c88a4fa3378ff86ae4ee155320a65203056cab6357377a96b8fdcab4cd1e81",
+    "start.contract.json": "d17c929d817d805fb4284fa4aa1b91a84b59cb672cf0b981889d84811f308dcd",
+    "cache.contract.json": "2270fb70995ddae5e55184965a5d1432ef44b8ee230ea9054deb5ec21dad2f26",
+    "node.contract.json": "d135372da4a35bd364ac3d1ecef80fff7275612c2f085cc617b70f6054fa974b",
+    "evidence.contract.json": "f0e36792f85b0cb9901d7c80210aa18731ccc65a836796ba8464588675b81d7d",
+    "gate.contract.json": "714ccf247bbb5612dcb475474b589582e23f2a4a1ac9e99c641afe44e690eb7e",
+    "hsaw.contract.json": "74ecc8fdf594381b6348a2dcd05cd99888b0c412248916d6c092d9fb9f07e1dc",
+    "resume.contract.json": "0c9ec11f154ba53af16f3d4f8383633f1c9a1f490463b0c9d093072caed76885",
+    "execute-report.contract.json": "ef5d156acf89bf4f20ac207bc8f0437758dee66086a05b9c0703563837d5b958",
+    "final-answer.contract.json": "6188f6f3e0a7f2a504fc4e5b373be690e27df08cfeb440bdb43352cbab6f1373",
+    "entry.contract.json": "4688fc844562607580ad373df1dbcfcf1993a15f643b4f10f820cd776007152a",
+    "conditional-reply.contract.json": "1680d438954940eba6dcbda013a9af007b22bfdd2c9f9071a1960839d2895bb6",
+    "engine-faults.contract.json": "47514afefbfdf1d4686726532a6f65fbc2cfeefcdf3e72d5de44b098cb5341e4",
+    "module-order.contract.json": "9b570738535883f53303488ea8a846f80c990fe8c48687615c7d0a63a4478657"
+  }
+}

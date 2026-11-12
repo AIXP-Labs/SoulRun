@@ -1,0 +1,1005 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "soulrun_aiap/schemas/commit.v1.json",
+  "title": "node-commit payload v1",
+  "description": "What the model submits for one node (04 series doc 01 §4.3 v0.2, doc 02 R/I references). Every field here is model-authored semantics; machine-owned fields are rejected (additionalProperties=false, plus the x-machine-owned list for the MACHINE_FIELD_REJECTED code).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "node",
+    "status",
+    "output",
+    "user_summary",
+    "user_messages",
+    "steps",
+    "evidence",
+    "anomalies",
+    "degraded_reason"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "node": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*(/[A-Za-z_][A-Za-z0-9_.-]*)*$",
+      "description": "Must equal the node named by next-node (NODE_MISMATCH otherwise). Sub-graph nodes carry their qualified id Parent/ns.Node (any depth)."
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "DEGRADED",
+        "PARTIAL",
+        "FAIL"
+      ]
+    },
+    "output": {
+      "type": [
+        "string",
+        "object"
+      ],
+      "description": "L0 machine result of the node: a non-empty string or a JSON object (serialised by the engine where text is needed). Never rendered to the user.",
+      "minLength": 1
+    },
+    "user_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "L1 text in the user's language; sole source of the Report segment."
+    },
+    "user_messages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "$ref": "#/$defs/steps"
+    },
+    "module_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "enter",
+            "skip"
+          ]
+        },
+        "cache_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "Only for engine-projected PRE_WORK. enter accepts pre-work in the same occurrence, not node completion. skip requires a program-declared module_cache policy and a bound, unexpired cache. Neither answers human gates."
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    },
+    "anomalies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "explain": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "alpha.23 (v6.25.0 business_node_info.explain): the orchestrator's explanation rendered under **Explain:** — output significance, upstream dependency, downstream consumer, risk or anomaly (or none), why the next node follows; in user_language."
+    },
+    "degraded_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Required non-null when status is DEGRADED (checked by node_commit, not by schema)."
+    },
+    "error_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "With status FAIL: AISOP §6.12 / program-defined error type used for on_error routing (R-11); e.g. timeout, tool_error, io_error, assertion_error."
+    },
+    "vars": {
+      "type": "object",
+      "description": "-> variables of this node (AISOP §6.9); node scope only, never propagated (R-26)."
+    },
+    "next_hint": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Required when topology.next_candidates has more than one entry; must be one of them (I-02)."
+    },
+    "gate": {
+      "$ref": "#/$defs/gate"
+    },
+    "human_compliance": {
+      "type": "array",
+      "description": "Affected instructions require one declaration each. Source/structure only; not proof of correct interpretation or actual compliance.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "instruction_id",
+          "status",
+          "rationale",
+          "evidence_refs"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "instruction_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "applied",
+              "not_applicable",
+              "violated"
+            ]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "gate_not_triggered_reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Required when the node has an advisory/conditional gate source and no gate is submitted (I-03)."
+    },
+    "dispatch_fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "spawn_failure_evidence"
+          ]
+        },
+        {
+          "required": [
+            "exhaustion_ticket"
+          ]
+        }
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spawn_failure_evidence": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Agent tool error text, verbatim."
+        },
+        "exhaustion_ticket": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Machine ticket closed because the ordinary claim budget is exhausted, not an Agent failure."
+        }
+      },
+      "description": "Main agent only, after next-node reported dispatch.state EXHAUSTED for an execute_mode agent node (doc 10 §3.2): why the sub-agent could not be spawned. Without it an inline commit of a dispatched node is rejected (SPAWN_NOT_ATTEMPTED)."
+    },
+    "route": {
+      "$ref": "#/$defs/route",
+      "description": "Router.match only."
+    },
+    "outer_nodes_in_path": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Router.cache-setup only: ordered outer nodes of the target program's main graph for this request."
+    },
+    "semantics": {
+      "$ref": "#/$defs/semantics",
+      "description": "Engine.execute-report (legacy Router.summary) and DirectReply answer_details."
+    },
+    "target_aiap_dir": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Generator programs only (AIAP §23.6): absolute path of the target AIAP directory; merged into the index identity group (R-36)."
+    },
+    "hsaw_items": {
+      "type": "array",
+      "description": "alpha.87 (doc 193): the doubts / problems / bugs the model met at this node; validated for structure and self-consistency by node_commit (severity is the model's; alpha.99, doc 239: a level below what the item's own facts require is raised, never lowered). Not accepted at the execution report / answer node.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Shape only: lib/hsaw_gate.validate_items checks enums, non-empty texts, address existence and self-consistency and answers with the HSAW_* codes; the engine-owned names are listed so that HSAW_FIELD_REJECTED, not SCHEMA_INVALID, names them.",
+        "properties": {
+          "category": {},
+          "severity": {},
+          "classification_uncertain": {},
+          "escalated_from": {},
+          "impact_classes": {},
+          "disposition": {},
+          "title": {},
+          "description": {},
+          "evidence_refs": {},
+          "reversible": {},
+          "classification_rationale": {},
+          "recommendation": {},
+          "scope": {},
+          "affected_files": {},
+          "touches_sovereignty_toolset": {},
+          "affects_sovereignty_markers": {},
+          "proposed_fix": {},
+          "same_as": {},
+          "id": {},
+          "fingerprint": {},
+          "occurrence": {},
+          "status": {},
+          "seq": {},
+          "prev_sha": {},
+          "sha": {},
+          "recorded_at": {},
+          "authorization": {},
+          "gate_question_id": {}
+        }
+      }
+    },
+    "user_message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "has"
+      ],
+      "description": "alpha.93 (doc 218): what this node's program gives the user - required on a completing business / sub commit, checked by node_commit against user_messages and the program's quoted texts.",
+      "properties": {
+        "has": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "step",
+              "kind"
+            ],
+            "properties": {
+              "step": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "content",
+                  "literal"
+                ]
+              },
+              "text": {
+                "type": "string"
+              },
+              "what": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "not_applicable": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "reason"
+            ],
+            "properties": {
+              "step": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "content",
+                  "literal"
+                ]
+              },
+              "what": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "none_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "x-machine-owned": [
+    "position",
+    "visit",
+    "ordinal",
+    "n",
+    "total",
+    "envelope",
+    "claim",
+    "claims",
+    "elapsed_ms",
+    "elapsed",
+    "started_at",
+    "ended_at",
+    "human_wait_ms",
+    "active_elapsed_ms",
+    "sha256",
+    "cache_sha256",
+    "dispatch_accounting",
+    "physical_provider_tool_calls",
+    "completed",
+    "execute_mode",
+    "agent_id",
+    "cache_schema_version",
+    "trace_id",
+    "session_id",
+    "question_id",
+    "ticket",
+    "tickets",
+    "delivered_at",
+    "answered_at",
+    "presented_at",
+    "run_state",
+    "accounting"
+  ],
+  "$defs": {
+    "steps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "done",
+        "remaining",
+        "not_applicable"
+      ],
+      "properties": {
+        "done": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "remaining": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "not_applicable": {
+          "type": "array",
+          "items": {
+            "description": "docs/05SoulRun 87: the step key, or {step, reason} - the reason is kept in the record (machine.steps_not_applicable).",
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "step"
+                ],
+                "properties": {
+                  "step": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "description": "done ∪ remaining ∪ not_applicable must equal the step keys returned by next-node (STEPS_NOT_CLOSED)."
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_calls",
+        "artifacts",
+        "sources"
+      ],
+      "properties": {
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tool",
+              "purpose"
+            ],
+            "properties": {
+              "tool": {
+                "type": "string",
+                "minLength": 1
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "step": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stdout_path": {
+                "type": "string",
+                "pattern": "^_proc/[A-Za-z0-9][A-Za-z0-9._-]{0,120}$",
+                "description": "alpha.22 process evidence: the file under <cache_dir>/_proc/ into which the process stdout was redirected; the engine hashes it (required for every process run)."
+              },
+              "stdout_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "sha256 hex of the captured stdout file; engine-derived from stdout_path (a self-reported value must match: EVIDENCE_STDOUT_MISMATCH)."
+              },
+              "stdout_snapshot": {
+                "type": "string",
+                "pattern": "^_proc/sha256-[0-9a-f]{64}\\.out$",
+                "description": "Machine-owned immutable copy of validated stdout; never submit this field. stdout_path remains the working capture address."
+              },
+              "stdout_bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "alpha.22: size of the captured stdout file; engine-derived."
+              },
+              "verified_by": {
+                "enum": [
+                  "engine"
+                ],
+                "description": "alpha.22: set by the engine after it hashed the captured file; never self-reported."
+              },
+              "stdout_excerpt": {
+                "type": "string",
+                "maxLength": 400,
+                "description": "alpha.21 process evidence: the first characters of that stdout (at most 400; empty when there was none)."
+              },
+              "exit_code": {
+                "type": "integer",
+                "description": "alpha.21 process evidence: the process exit code."
+              },
+              "sys_call": {
+                "type": "string",
+                "pattern": "^sys(\\.[a-z_]+){1,3}",
+                "description": "The sys.* call this tool use executed; the name alone (sys.io.read) or the full call text are both accepted."
+              }
+            }
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "kind"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "enum": [
+                  "file",
+                  "directory"
+                ]
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "Self-reported values are recomputed by the tool; mismatch is ARTIFACT_MISSING."
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Self-reported size (informational, doc 07 §2)."
+              },
+              "note": {
+                "type": "string",
+                "description": "Free note about the artifact (informational)."
+              },
+              "operation": {
+                "type": "string",
+                "description": "What was done: created / updated / appended … (informational)."
+              }
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "required": [
+                  "url",
+                  "retrieved_at"
+                ],
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "path"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sha256"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "bytes"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "verification_scope"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "path"
+                ],
+                "not": {
+                  "required": [
+                    "url"
+                  ]
+                }
+              }
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Engine-owned local observation."
+              },
+              "verification_scope": {
+                "const": "local_file_bytes_only",
+                "description": "Engine-owned; not semantic validation."
+              },
+              "url": {
+                "type": "string",
+                "minLength": 1
+              },
+              "retrieved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Actual observed retrieval timestamp, or null if unobserved. Never substitute user reply or node start time.",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?(Z|[+-]\\d{2}:\\d{2})$"
+              },
+              "recorded_at": {
+                "type": "string",
+                "description": "Engine-owned source receipt time; not retrieval time. Forbidden in model submissions."
+              },
+              "retrieval_time_basis": {
+                "enum": [
+                  "unobserved",
+                  "model_reported_unverified"
+                ],
+                "description": "Engine-owned provenance; model-supplied timestamps are never upgraded to verified."
+              },
+              "title": {
+                "type": "string"
+              },
+              "source_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Program-declared citation anchor (e.g. S3 for [S3]); kept verbatim (doc 07 §2)."
+              },
+              "content_kind": {
+                "enum": [
+                  "original",
+                  "search_summary",
+                  "unknown"
+                ],
+                "description": "Declared retrieval class, not Provider attestation. Pair with content_ref; only original can support source_verified."
+              },
+              "content_ref": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Existing work/proc/artifact/input address to saved source content; never reconstructed prose. Paired with content_kind."
+              },
+              "label": {
+                "type": "string",
+                "description": "Program-declared human label of the source (doc 07 §2)."
+              },
+              "tool": {
+                "type": "string",
+                "description": "Tool used to retrieve the original; locator is an http(s) URL or an absolute local file path."
+              }
+            }
+          }
+        },
+        "sys_assert_results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "step",
+              "context_snapshot",
+              "result"
+            ],
+            "properties": {
+              "step": {
+                "type": "string",
+                "minLength": 1
+              },
+              "expression": {
+                "type": "string",
+                "description": "Informational. The engine re-evaluates the PROGRAM's expression from the step text, never this one (I-08)."
+              },
+              "context_snapshot": {
+                "type": "object"
+              },
+              "result": {
+                "type": "boolean"
+              }
+            }
+          },
+          "description": "One entry per done sys.assert step: context_snapshot holds every variable the program's expression names; the engine re-evaluates the program's own expression (§6.11) and rejects on mismatch; expressions outside §6.11 are recorded as ASSERT_EXPRESSION_UNSUPPORTED and the declared result is accepted."
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question",
+        "options",
+        "closing",
+        "recommendation",
+        "advice",
+        "explanation"
+      ],
+      "properties": {
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "label",
+              "intent"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "execute",
+                  "cancel"
+                ]
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "intent": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-z][a-z0-9_]*$"
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "next_hint": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Execute-only binding to a declared successor of this node. endNode is normal completion, not cancellation."
+              },
+              "note": {
+                "type": "string",
+                "description": "alpha.50 (doc 104): the option's own two or three sentences, taken from the streamed gate text (or given inline)"
+              }
+            }
+          }
+        },
+        "closing": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "intent of the recommended option (required since alpha.28); a recommendation is never a choice (Axiom 0)."
+        },
+        "advice": {
+          "type": "string",
+          "minLength": 1,
+          "description": "why that option is recommended, in the user's language; non-binding (alpha.28)."
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "what this decision is about and how the options differ, in the user's language (alpha.28)."
+        },
+        "resume_boundary": {
+          "type": "string",
+          "description": "alpha.87 (doc 193 §4): required (non-empty, checked by node_commit as HSAW_GATE_INCOMPLETE) for an hsaw_doubt gate - why execution stops here and where it continues after the answer."
+        },
+        "conditional_reply": {
+          "type": "object",
+          "description": "Must exactly equal this program node's conditional_reply extension. lib/conditional_reply validates version, items, quotas and node identities. Forbidden on engine-owned gates."
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "rationale"
+      ],
+      "properties": {
+        "package": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A registry snapshot entry or \"no_match\"."
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "final_answer": {
+          "type": "string",
+          "description": "alpha.45: `Engine.final-answer` only - the complete business answer (or the lead beside report_parts). Engine.execute-report carries the accounting keys instead; the engine checks each node's key set."
+        },
+        "report_parts": {
+          "description": "alpha.69 / alpha.80 / alpha.90: the references of the answer - every delivered Node Message and key Report of the run, then the execution report - as the skeleton pre-fills them in node order; the cap only bounds a runaway list (doc 201: 12 required references met the legacy cap of 8 and the run could not end).",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ref",
+              "field"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "field": {
+                "enum": [
+                  "user_summary",
+                  "user_messages"
+                ]
+              },
+              "message_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Engine-served historical User Message frame in final report_parts only; omission selects the latest frame. Ordinary input references remain latest-bound."
+              }
+            }
+          }
+        },
+        "intent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "functional_status": {
+          "enum": [
+            "PASS",
+            "DEGRADED",
+            "PARTIAL",
+            "FAIL"
+          ]
+        },
+        "nodes_skipped": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "per_node": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node",
+              "material_action",
+              "result"
+            ],
+            "properties": {
+              "node": {
+                "type": "string",
+                "minLength": 1
+              },
+              "material_action": {
+                "type": "string",
+                "minLength": 1
+              },
+              "result": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "answer_details": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "coverage": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/coverage"
+              }
+            },
+            "request_summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "key_data": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/detail"
+              }
+            },
+            "comparisons": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/detail"
+              }
+            },
+            "conditions_limits_risks": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/detail"
+              }
+            },
+            "follow_up": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/detail"
+              }
+            }
+          },
+          "required": [
+            "coverage"
+          ]
+        }
+      }
+    },
+    "detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answer_excerpt": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "source_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "text",
+        "answer_excerpt",
+        "source_nodes"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "answer_excerpt": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "node",
+        "visit",
+        "answer_excerpt"
+      ]
+    }
+  }
+}

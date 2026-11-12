@@ -1,0 +1,14 @@
+{
+  "schema": "contract.v1",
+  "id": "cache",
+  "version": 2,
+  "title": "Router.cache-setup",
+  "applies": "Router.cache-setup",
+  "sections": [
+    {
+      "id": "cache.outer_path",
+      "applies": "Router.cache-setup",
+      "text": "outer_nodes_in_path = main-graph node names in graph order (consecutive pairs joined by edges), no end nodes, no duplicates. Refused: PATH_INVALID."
+    }
+  ]
+}

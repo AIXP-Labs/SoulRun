@@ -1,0 +1,48 @@
+{
+  "schema": "contract.v1",
+  "id": "resume",
+  "version": 14,
+  "title": "Resume",
+  "applies": "a node resumed after its gate was answered, or re-served",
+  "sections": [
+    {
+      "id": "resume.answered_note",
+      "applies": "a node resumed after its gate was answered",
+      "text": "ANSWERED: explain the execution without recopying the human's reply (the Report already carries it with the option label); data quoted from it is not a new tool use or timing claim."
+    },
+    {
+      "id": "resume.prior_gate",
+      "applies": "a node resumed after its gate was answered",
+      "placeholders": [
+        "chosen_intent",
+        "question_id"
+      ],
+      "text": "PRIOR GATE: gate <<question_id>> is already answered (input_authority.gate_answer, intent <<chosen_intent>>): act on it, never repeat that menu; only a new material question opens a different gate. Record the completed gate steps and the chosen intent. Refused: GATE_ALREADY_ANSWERED."
+    },
+    {
+      "id": "resume.presentation",
+      "applies": "a resumed or re-served node (not the answer node)",
+      "text": "Resume presentation: emit this reply's public_plan_ref verbatim before the Report or any node work, even if the PLAN was shown earlier; follow the returned steps and gate_answer, never replay completed work."
+    },
+    {
+      "id": "resume.continuation_evidence",
+      "applies": "a resumed or re-served node",
+      "text": "CONTINUATION EVIDENCE: list only the business tool uses newly executed here, never earlier calls copied to back a cumulative steps.done; a repeated stdout reference is not another execution; tc counts declared entries, not physical calls."
+    },
+    {
+      "id": "resume.dispatch_segments",
+      "applies": "node-mode main-node agent root and its subtree",
+      "text": "ROOT EXECUTOR: normal/lite main-inline; node uses each entry-file main node's execute_mode, in any graph. Same-file stages are main nodes; external modules inherit the nearest main executor and run inline through agent_engine/common kernel. No nested Agent; child re-entry into the main graph pauses for HSAW. WAITING_USER returns ordered public_refs and stops; before presenting any of it main calls next-node once (no ticket), which shows and serves the gate; main presents the served ordered refs and any served public_block_ref or gate.public_prompt_ref not among them, once each. Present the served current menu, never the child's superseded menu. DEFAULT IDENTITY: no host report is qualified to prove the original child in this release. A ticket number, SDK callback, ACK, claimed identity, receipt or rewritten proof is not identity or human authorization. Engine fences the old execution right and asks before any new agent. At an unshown business question, its explicit continuing options jointly authorize that business choice and ONE NEW agent for the bound checkpoint. Pause/inspect leaves the business question unanswered; cancellation or pause dispatches nothing. A business refusal keeps its declared route/report; it is not Engine termination. If the ordinary question was already answered, the old question lacked replacement notice, return had no business question, or authorization is refused/unclear, ask a separate current handover question. Never infer replacement from any reply. Only after the bound human choice does Engine issue one new ticket; dispatch.spawn uses a NEW Agent reading agent_engine. Preserve accepted work, inputs, original human replies and all main-node references. Fencing revokes the old ticket, not the old process; external effects stay UNKNOWN unless separately checked and must not be repeated on uncertainty. Human-authorized identity handovers at distinct accepted checkpoints do not spend fault retries; same-progress failures retain the existing bound of 2. Re-serves, identity questions, observations and timestamps are not business progress. Full contracts per segment; next_plan reuse within that segment. Late old-ticket payloads stay preserved and rejected. Host qualification is separately reviewed, with no model-enabled trust switch. Explicit host Agent=false at fresh package selection makes declared node use effective normal for the entire run through the same main-inline kernel. Emit the cache-setup PLAN mode notice verbatim; keep the limitation in Report/final. Declared independent work then has independence NOT achieved; never claim blind review or fresh-agent context. No capability approval menu, no tickets, no nested Agents. Actual business human gates still stop. Unknown is not false; unresolved child ownership never silently transfers to main."
+    },
+    {
+      "id": "resume.non_gate_handoff",
+      "applies": "returned unfinished root or unavailable continuation without a current business question",
+      "text": "An unfinished return without a qualified original-child identity requires a separate explicit human handover question. A diagnostic return, ACK or --dispatch-abandon reason cannot authorize an agent or inline takeover. Engine first fences the old ticket and binds the unchanged accepted checkpoint; only the presented current continuing option authorizes ONE NEW agent, not original-child resume. Keep accepted business answers and input isolation, check uncertain external effects without repeating them, and preserve the existing same-progress failure bound. An actual business gate remains unanswered unless the human explicitly answered its jointly bound choice. Rechecking liveness is not execution permission; sealing a ticket does not prove any process exited. Authority binds raw original input bytes and the immutable question/options/explanation/time through fence.authority_sha256, not a recomputed baseline. Missing or changed binding stops; never backfill old records. Delivery, audit and original-answer bookkeeping remain legitimate; completed history stays read-only and explicit safe termination remains available. This is file consistency, not native identity, process-exit proof or an OS sandbox."
+    },
+    {
+      "id": "resume.blind_review",
+      "applies": "declared blind_review root only",
+      "text": "BLIND REVIEW: use only bound candidates/standards, declared short context and this root's steps. No Writer rationale, old scores, repairs or upstream Reports. blind_inputs declares {candidates:[{node,artifact}],standards:[relative file],context?:[named output scalar selector+allowed values]}. Read context from review_inputs.context, never its source cache. Missing/conflicting/changed facts stop; SHA proves selection/source, not meaning. No declaration means no added access. Scoped human_instructions remain authoritative; submit compliance. fresh_agent keeps dependencies. Active sources/snapshots must not change. Past scores certify snapshots, not changed files; downstream results remain readable with review_binding_status VERIFIED/CHANGED_AFTER_REVIEW/EVIDENCE_CHANGED. Record damage without trusting paths or rewriting scores; program decides independent re-review. API is not an OS/shell sandbox. No zero-nested-Agent or original-session-restoration claim without trusted evidence."
+    }
+  ]
+}

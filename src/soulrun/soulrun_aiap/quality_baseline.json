@@ -1,0 +1,16 @@
+{
+  "scoring_scale": "1-5",
+  "version": "1.0.0",
+  "trust_level": 3,
+  "status": "draft",
+  "snapshot_date": "2026-09-05",
+  "weighted_score": null,
+  "grade": null,
+  "score_scope": "not scored: hand-written v7 alpha; conformance is verified by tools/aiap_conformance_check.py (C-01..C-11), not by ThreeDimTest",
+  "conformance": {
+    "tool": "tools/aiap_conformance_check.py",
+    "checks": "C-01..C-11 per 04 series doc 02 section 3",
+    "last_run": null
+  },
+  "governance_hash": "fe447f5dc20483e7"
+}

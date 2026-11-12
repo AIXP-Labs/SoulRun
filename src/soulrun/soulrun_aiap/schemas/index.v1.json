@@ -1,0 +1,2265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "soulrun_aiap/schemas/index.v1.json",
+  "title": "_index.json v1 — six machine-owned field groups",
+  "description": "Written only by next_node (initialisation), node_commit and gate_answer (04 series doc 01 §5.2 v0.2). Groups: identity, path & cursor, gate, timing, evidence digest, terminal. Never accepts external input.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "engine_version",
+    "trace_id",
+    "session_id",
+    "program",
+    "started_at",
+    "user_language",
+    "catalog",
+    "current",
+    "completed",
+    "route",
+    "call_stack",
+    "context",
+    "gate",
+    "tickets",
+    "run_termination",
+    "nodes",
+    "semantics",
+    "accounting",
+    "final_answer_sha256",
+    "run_state",
+    "anomalies_summary",
+    "budget"
+  ],
+  "properties": {
+    "revisit_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "source_visit",
+          "target",
+          "target_visit",
+          "parent",
+          "parent_visit",
+          "reason",
+          "source_gate_ref",
+          "policy",
+          "committed_at"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "source_visit": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "target": {
+            "type": "string"
+          },
+          "target_visit": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parent_visit": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "reason": {
+            "enum": [
+              "error_route",
+              "graph_backedge"
+            ]
+          },
+          "source_gate_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "policy": {
+            "const": "OBSERVE_ONLY_NOT_AUTHORIZATION"
+          },
+          "committed_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "engine_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "program": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "entry_path",
+        "entry_file",
+        "trust_level",
+        "loading_mode",
+        "permissions_digest",
+        "checks",
+        "skipped_files"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entry_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entry_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "trust_level": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "loading_mode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "execution_loading_mode": {
+          "enum": [
+            "normal",
+            "node"
+          ],
+          "description": "Machine projection of the current executor, not a mode override. Lite retains loading_mode=lite and currently borrows normal. Optional for historical caches."
+        },
+        "permissions_digest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "severity",
+              "detail"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "INFO",
+                  "WARN",
+                  "FATAL"
+                ]
+              },
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "skipped_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "file",
+              "reason"
+            ],
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "governance": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {
+              "type": "string"
+            },
+            "computed": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "declared": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "match": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "description": "alpha.22 E4: canonical v1.0 governance hash of the routed program vs the hash it declares; registration only."
+        }
+      }
+    },
+    "aiap_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "AIAP §23.6 (optional)."
+    },
+    "target_aiap_dir": {
+      "type": "string",
+      "minLength": 1,
+      "description": "AIAP §23.6 (optional): absolute path written by generator pipelines."
+    },
+    "started_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "updated_at": {
+      "$ref": "#/$defs/timestamp",
+      "description": "Last engine write of this index (set by every write); fallback anchor for transport-wait accounting (doc 06 §2)."
+    },
+    "user_language": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "catalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "kind",
+          "ordinal",
+          "parent",
+          "depth",
+          "task"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Qualified id: bare name at depth 0, Parent/ns.Node for sub-graph nodes (any depth)."
+          },
+          "kind": {
+            "enum": [
+              "engine",
+              "business",
+              "sub"
+            ]
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "task": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "doc": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Module document of a sub node (null = entry document)."
+          },
+          "node": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Bare graph node name (null for engine nodes)."
+          }
+        }
+      }
+    },
+    "current": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "visit"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "visit": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "completed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "visit"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "visit": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "decided_at",
+        "snapshot"
+      ],
+      "properties": {
+        "package": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "decided_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "snapshot": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "catalog_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sources": {
+          "type": "object"
+        }
+      }
+    },
+    "call_stack": {
+      "type": "array",
+      "description": "Open module frames, innermost last (doc 05 §4.2). Empty at depth 0. Each frame is the sub-graph a module node opened; the sub nodes it executes are catalog entries with parent = frame.parent.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "parent",
+          "parent_visit",
+          "doc",
+          "task",
+          "ns",
+          "dir",
+          "entered_at",
+          "order"
+        ],
+        "properties": {
+          "parent": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parent_visit": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "doc": {
+            "type": "string",
+            "minLength": 1
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ns": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dir": {
+            "type": "string",
+            "minLength": 1
+          },
+          "entered_at": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sub nodes committed in this frame so far."
+          }
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "output_mapping store (R-12)."
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "question_id",
+        "node",
+        "source",
+        "kind",
+        "presented_at",
+        "delivered_at",
+        "answered_at",
+        "history"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "CLEAR",
+            "WAITING_USER"
+          ]
+        },
+        "question_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "node": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "sys_io_call",
+            "user_gate",
+            "advisory_text",
+            "router_candidates",
+            "model_request",
+            null,
+            "hsaw_doubt"
+          ],
+          "description": "model_request: the model asked the user on a node that declares no gate source (doc 12 §7.4)."
+        },
+        "kind": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "presented_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "delivered_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "answered_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "question_id",
+              "node",
+              "source",
+              "prompt_text",
+              "presented_at",
+              "answered_at",
+              "resolution_kind",
+              "answer_ref"
+            ],
+            "properties": {
+              "question_id": {
+                "type": "string"
+              },
+              "node": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "prompt_text": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "presented_at": {
+                "type": "string"
+              },
+              "answered_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "resolution_kind": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "chosen",
+                  "free_text",
+                  "cancel",
+                  "terminate",
+                  "invalid_retry",
+                  "timeout",
+                  null
+                ]
+              },
+              "answer_ref": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Path of the _gate.<question_id>.json audit record (R-20)."
+              }
+            }
+          },
+          "description": "append-only (R-20)."
+        }
+      }
+    },
+    "tickets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "state",
+          "minted_at"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "READY",
+              "CONSUMED",
+              "RETIRED"
+            ]
+          },
+          "minted_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "run_termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "by",
+        "at",
+        "reason",
+        "rejection_report",
+        "resume_prohibited"
+      ],
+      "properties": {
+        "kind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "success",
+            "timeout",
+            "fatal",
+            "assertion",
+            "rejection",
+            "human_termination",
+            "cancelled",
+            "degraded",
+            null
+          ]
+        },
+        "by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "engine",
+            "host",
+            "human",
+            null
+          ]
+        },
+        "at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rejection_report": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "confirm_text",
+            "user_response"
+          ],
+          "properties": {
+            "confirm_text": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "user_response": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "resume_prohibited": {
+          "type": "boolean"
+        }
+      }
+    },
+    "nodes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "visit",
+          "planned_at",
+          "ready_at",
+          "committed_at",
+          "elapsed_ms",
+          "human_wait_ms",
+          "active_elapsed_ms",
+          "cache_sha256",
+          "artifacts",
+          "sources_count",
+          "logical_tool_calls"
+        ],
+        "properties": {
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "PLANNED",
+              "ACTIVE",
+              "COMMITTED",
+              "WAITING_USER",
+              "DEGRADED",
+              "FAILED",
+              null
+            ]
+          },
+          "visit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "planned_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ready_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resume_capture_boundary": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "module_prefix": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "pre_steps",
+              "call_step",
+              "within_step"
+            ],
+            "properties": {
+              "state": {
+                "const": "ACCEPTED"
+              },
+              "pre_steps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "call_step": {
+                "type": "string"
+              },
+              "within_step": {
+                "type": "boolean"
+              }
+            }
+          },
+          "module_cache_observation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256",
+              "mtime_ns",
+              "binding"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              },
+              "mtime_ns": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "binding": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "call_sha256",
+                  "upstream_sha256"
+                ],
+                "properties": {
+                  "call_sha256": {
+                    "type": "string"
+                  },
+                  "upstream_sha256": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "committed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "elapsed_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "human_wait_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "active_elapsed_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "cache_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "directory_manifest": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "VERIFIED",
+                        "EXISTENCE_ONLY"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "members": {
+                      "type": "array",
+                      "maxItems": 256,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "path",
+                          "sha256",
+                          "bytes"
+                        ],
+                        "properties": {
+                          "path": {
+                            "type": "string"
+                          },
+                          "sha256": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{64}$"
+                          },
+                          "bytes": {
+                            "type": "integer",
+                            "minimum": 0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "status": {
+                            "const": "VERIFIED"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "members",
+                          "sha256"
+                        ]
+                      },
+                      "else": {
+                        "required": [
+                          "reason"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "sources_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "logical_tool_calls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "serves": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many times next-node served this occurrence (doc 14 D7): 1 = fresh; >1 = re_serve (the model asked again without committing - after a rejected commit, after --help, or after a host re-entry)."
+          },
+          "prepares": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "transport_wait_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Raw recorded recovery wait, including startup outside ready->commit. Only the measured-window interval union is deducted from active_elapsed_ms. Legacy caches without interval anchors retain their original total-only deduction."
+          },
+          "transport_wait_intervals": {
+            "type": "array",
+            "description": "Host-recorded recovery intervals for this occurrence; overlapping intervals are deducted once within ready->end only.",
+            "items": {
+              "type": "object",
+              "required": [
+                "started_at",
+                "ended_at"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "started_at": {
+                  "type": "string"
+                },
+                "ended_at": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "transport_wait_legacy_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Pre-Alpha34 total without recoverable anchors, preserved only when a legacy occurrence receives a new interval."
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Sub node: qualified id of the module node that opened its frame."
+          },
+          "parent_visit": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "order": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Sub node: commit order inside its frame (0-based)."
+          },
+          "dispatch": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "mode",
+              "ticket",
+              "attempt",
+              "state",
+              "actor",
+              "downgrade",
+              "fallback",
+              "history"
+            ],
+            "description": "doc 10 §3.1: executor record of an outer occurrence. mode agent = dispatched to a sub-agent (ticket state machine); mode inline with a downgrade = declared agent but run inline (NORMAL_MODE_FORCES_INLINE / SPAWN_BUDGET_EXHAUSTED / EXECUTE_MODE_UNKNOWN).",
+            "properties": {
+              "scope_root": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "node",
+                  "visit"
+                ],
+                "properties": {
+                  "node": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "visit": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "public_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "mode": {
+                "enum": [
+                  "agent",
+                  "inline"
+                ]
+              },
+              "ticket": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^d[0-9]{3}-[0-9a-f]{8}$"
+              },
+              "attempt": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "state": {
+                "enum": [
+                  "ISSUED",
+                  "CLAIMED",
+                  "COMMITTED",
+                  "ABANDONED",
+                  "EXHAUSTED",
+                  "FALLBACK",
+                  "INLINE"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "fresh | reissue | gate_resume"
+              },
+              "issued_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "claimed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "committed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "paused_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "actor": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "sub_agent | main_agent"
+              },
+              "bootstrap_sha256": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "pool": {
+                "enum": [
+                  "ordinary",
+                  "independent"
+                ]
+              },
+              "downgrade": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "fallback": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "required": [
+                  "reason",
+                  "spawn_failure_evidence"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string"
+                  },
+                  "spawn_failure_evidence": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "exhaustion_ticket": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "history": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "lifecycle": {
+                "enum": [
+                  "UNKNOWN",
+                  "RETURNED"
+                ]
+              },
+              "exit_evidence": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              },
+              "last_progress_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "context_resume": {
+                "enum": [
+                  "NEW_SEGMENT",
+                  "ORIGINAL_SESSION_RESUME_UNVERIFIED",
+                  "ORIGINAL_SESSION_RESUME_REQUESTED",
+                  "ORIGINAL_SESSION_RESUME_OBSERVED",
+                  "REPLACEMENT_SESSION_REQUESTED"
+                ]
+              },
+              "resume_executor": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "agent_id",
+                  "session_id",
+                  "previous_ticket"
+                ],
+                "properties": {
+                  "agent_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{8,80}$"
+                  },
+                  "session_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "previous_ticket": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "replacement_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2
+              },
+              "identity_handoff": {
+                "type": "object", "additionalProperties": false,
+                "required": ["fence_ref", "authorization_ref", "progress_key", "previous_ticket", "question_id"],
+                "properties": {
+                  "fence_ref": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+                    "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}},
+                  "authorization_ref": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+                    "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}},
+                  "progress_key": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                  "previous_ticket": {"type": "string"},
+                  "question_id": {"type": "string"}
+                }
+              },
+              "human_replacement": {
+                "type": "object",
+                "description": "docs/05SoulRun 84/87: the human's choice of one new child for a root whose child returned with an error (paused at an answered gate or not), or whose liveness an interruption left unknown; bound to that exact return or interrupted ticket.",
+                "additionalProperties": false,
+                "required": [
+                  "question_id",
+                  "previous_ticket",
+                  "basis",
+                  "answered_by",
+                  "answered_at",
+                  "answer_text_original"
+                ],
+                "properties": {
+                  "question_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "previous_ticket": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "basis": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "ticket",
+                      "attempt",
+                      "scope_root"
+                    ],
+                    "properties": {
+                      "ticket": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "attempt": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "scope_root": {
+                        "type": "object"
+                      },
+                      "exit_evidence": {
+                        "type": "object"
+                      },
+                      "interruption_observation": {
+                        "type": "object"
+                      },
+                      "start_evidence": {
+                        "type": ["object", "null"]
+                      },
+                      "return_query": {
+                        "type": ["object", "null"]
+                      }
+                    },
+                    "oneOf": [
+                      {"required": ["exit_evidence"], "not": {"required": ["interruption_observation"]}},
+                      {"required": ["interruption_observation", "start_evidence", "return_query"], "not": {"required": ["exit_evidence"]}}
+                    ]
+                  },
+                  "answered_by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "answered_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "answer_text_original": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "handoff": {
+                "type": "object",
+                "description": "Machine-checked returned segment and unstarted continuation; replacement is not same-child resume.",
+                "additionalProperties": false,
+                "required": [
+                  "previous_ticket",
+                  "unused_ticket",
+                  "old_executor",
+                  "return_evidence",
+                  "question_id",
+                  "authority"
+                ],
+                "properties": {
+                  "previous_ticket": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "unused_ticket": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "old_executor": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "agent_id",
+                      "session_id",
+                      "previous_ticket"
+                    ],
+                    "properties": {
+                      "agent_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "session_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "previous_ticket": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "return_evidence": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "sha256"
+                    ]
+                  },
+                  "delivery_failure": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "sha256"
+                    ]
+                  },
+                  "question_id": {
+                    "type": ["string", "null"],
+                    "minLength": 1
+                  },
+                  "continuation": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["current", "input_sha256", "accepted", "accepted_answer"],
+                    "properties": {
+                      "current": {"type": "object", "additionalProperties": false, "required": ["name", "visit"],
+                        "properties": {"name": {"type": "string", "minLength": 1}, "visit": {"type": "integer", "minimum": 1}}},
+                      "input_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                      "accepted": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+                      "accepted_answer": {"type": ["object", "null"]}
+                    }
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "reason_source": {
+                    "const": "main_report_unverified"
+                  },
+                  "authority": {
+                    "const": "returned_segment_unstarted_continuation"
+                  }
+                },
+                "oneOf": [
+                  {"properties": {"question_id": {"type": "string", "minLength": 1}}, "not": {"required": ["continuation"]}},
+                  {"required": ["continuation"], "properties": {"question_id": {"type": "null"}}}
+                ]
+              },
+              "closed_reason": {
+                "type": "string"
+              },
+              "closed_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "review_binding": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "sha256",
+                  "candidate_digest"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "pattern": "^_blind\\.[a-f0-9]{24}\\.json$"
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "candidate_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              },
+              "input_binding": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["path", "sha256"],
+                "properties": {
+                  "path": {"type": "string", "pattern": "^_inputs\\.[a-f0-9]{24}\\.json$"},
+                  "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+                }
+              },
+              "interruption_observation": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "at",
+                  "reason",
+                  "physical_exit"
+                ],
+                "properties": {
+                  "at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "physical_exit": {
+                    "enum": [
+                      "UNVERIFIED"
+                    ]
+                  }
+                }
+              },
+              "contract_delivery": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "serves",
+                  "given"
+                ],
+                "properties": {
+                  "serves": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "given": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "sha",
+                        "serve"
+                      ],
+                      "properties": {
+                        "sha": {
+                          "type": "string"
+                        },
+                        "serve": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "module": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "doc",
+              "task",
+              "ns",
+              "dir",
+              "entry_node",
+              "opened_at",
+              "closed_at",
+              "status",
+              "sub_count",
+              "status_counts",
+              "max_depth",
+              "manifest_sha256"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "OPEN",
+                  "CLOSED"
+                ]
+              },
+              "doc": {
+                "type": "string"
+              },
+              "task": {
+                "type": "string"
+              },
+              "ns": {
+                "type": "string"
+              },
+              "dir": {
+                "type": "string"
+              },
+              "entry_node": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "opened_at": {
+                "type": "string"
+              },
+              "closed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "PASS",
+                  "DEGRADED",
+                  "FAIL",
+                  null
+                ]
+              },
+              "sub_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "status_counts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              },
+              "max_depth": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "manifest_sha256": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "description": "Module node: the sub-graph frame it opened (doc 05 §4.2/§4.3)."
+          }
+        }
+      }
+    },
+    "semantics": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "accounting": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": [
+          "integer",
+          "string",
+          "boolean",
+          "null"
+        ]
+      },
+      "properties": {
+        "evidence_counting_basis": {
+          "const": "evidence_reference_counts_v1"
+        },
+        "evidence_unique_outputs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_unique_verified": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_repeated_references": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_unknown_identity_references": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_conflicting_paths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_cross_scope_reuses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "physical_business_tool_calls": {
+          "type": "null"
+        },
+        "anomalies_by_code": {
+          "type": "object",
+          "description": "docs/05SoulRun 87: run-index anomaly records (anomalies_summary) per code; a count, never a severity.",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "description": "Machine accounting keys merged at Engine.execute-report (legacy Router.summary); values are scalars only, except the per-code anomaly counts."
+    },
+    "final_answer_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "final_answer_metrics": {
+      "description": "alpha.47 (doc 93): observability only - the delivered answer's size and composition (composed chars, the model's own lead, report_parts count, coverage rows); never a gate.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "chars",
+        "lead_chars",
+        "report_parts",
+        "coverage"
+      ],
+      "properties": {
+        "chars": {
+          "type": "integer"
+        },
+        "lead_chars": {
+          "type": "integer"
+        },
+        "report_parts": {
+          "type": "integer"
+        },
+        "coverage": {
+          "type": "integer"
+        }
+      }
+    },
+    "run_state": {
+      "enum": [
+        "RUNNING",
+        "WAITING_USER",
+        "COMPLETED",
+        "ABANDONED",
+        "FAILED"
+      ]
+    },
+    "anomalies_summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "node",
+          "code",
+          "text"
+        ],
+        "properties": {
+          "node": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "active_ms"
+      ],
+      "properties": {
+        "source": {
+          "enum": [
+            "program.runtime.timeout_seconds",
+            "engine_default"
+          ]
+        },
+        "active_ms": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "tickets_issued",
+        "spawns_claimed",
+        "fallbacks",
+        "spawn_hard_limit"
+      ],
+      "description": "doc 10 §3.1: run-level sub-agent dispatch accounting; policy is decided at Router.cache-setup from program.loading_mode.",
+      "properties": {
+        "policy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "node_mode_follows_execute_mode | normal_forces_inline"
+        },
+        "tickets_issued": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "spawns_claimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independent_claimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independent_hard_limit": {
+          "type": "integer",
+          "minimum": 16,
+          "description": "Default 16/20 plus machine-recorded, human-authorized run-local additions."
+        },
+        "independent_extensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "question_id",
+              "added",
+              "prior_limit",
+              "used_before",
+              "answered_by",
+              "answered_at",
+              "answer_text_original"
+            ],
+            "properties": {
+              "question_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "added": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "prior_limit": {
+                "type": "integer",
+                "minimum": 16
+              },
+              "used_before": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "answered_by": {
+                "type": "string",
+                "minLength": 1
+              },
+              "answered_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "answer_text_original": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "fallbacks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "spawn_hard_limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ordinary_resumes_claimed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Machine-confirmed same-child ordinary gate continuations; total claims remain in spawns_claimed."
+        },
+        "independent_resumes_claimed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Native-authorized same-child independent continuations; independent_claimed remains raw."
+        },
+        "ordinary_replacements_claimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independent_replacements_claimed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Host projection (soulbot.engine_hooks._engine_functional_outcome): run_state in lower case. Derived on every write; never an input."
+    },
+    "functional_execution_status": {
+      "enum": [
+        "PASS",
+        "DEGRADED",
+        "PARTIAL",
+        "FAIL",
+        "WAITING_USER",
+        "UNVERIFIED"
+      ],
+      "description": "Host projection: semantics.functional_status when COMPLETED, FAIL when FAILED/ABANDONED, WAITING_USER, else UNVERIFIED."
+    },
+    "failure_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Host projection: termination kind as a code when the run ended without success."
+    },
+    "terminal_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Host projection: run_termination.reason."
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "turn_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "origin_channel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "requested_model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entry_mode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "last_turn_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "gate_answer_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "response_persisted": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "reconciled_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "host_fences": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "host_tools": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "description": "alpha.62 (doc 135 §4 B): host capabilities beyond the stream; agent=false means no Agent tool, so declared-agent nodes run inline (HOST_NO_AGENT_TOOL)."
+        }
+      },
+      "description": "Facts the host reports (prepare_cache / finalize); never used by the engine to decide anything - except host_fences (alpha.44), which only widens the texts the model may stream, and host_tools (alpha.62), which only narrows dispatch to what the host can do."
+    },
+    "hsaw_register": {
+      "type": "array",
+      "description": "alpha.87 (doc 193 §5): the run's sovereignty doubt gate register - engine-written, append-only, sha-chained (seq, prev_sha, sha).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "seq",
+          "prev_sha",
+          "sha",
+          "kind",
+          "node",
+          "visit",
+          "at"
+        ],
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "prev_sha": {
+            "type": "string"
+          },
+          "sha": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "discovered",
+              "gate_opened",
+              "gate_answered"
+            ]
+          },
+          "node": {
+            "type": "string"
+          },
+          "visit": {
+            "type": "integer"
+          },
+          "at": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "question_id": {
+            "type": "string"
+          },
+          "item_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "resolution_kind": {
+            "type": "string"
+          },
+          "chosen_intent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "chosen_label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cancelled": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "alpha.88 (doc 196 F4'): set by gate_answer when the human cancelled at a business / sub node without a confirm_rejected route - the business work closed there, Engine.execute-report and Engine.final-answer still ran, the run ends COMPLETED with run_termination.kind cancelled. Absent in older caches.",
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "visit",
+        "question_id",
+        "chosen_label",
+        "answer_text",
+        "at",
+        "dropped_nodes",
+        "frames_closed"
+      ],
+      "properties": {
+        "node": {
+          "type": "string"
+        },
+        "visit": {
+          "type": "integer"
+        },
+        "question_id": {
+          "type": "string"
+        },
+        "chosen_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "answer_text": {
+          "type": "string"
+        },
+        "at": {
+          "type": "string"
+        },
+        "dropped_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "frames_closed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "contract_delivery": {
+      "type": "object",
+      "description": "alpha.100 (04 series doc 241): the mixed contract delivery ledger - sessions (direct next-node calls), serves, the sections given in the current model session with the digest of their text and the serve they rode on, the --contract reads (last 200), the last served node's sections, counters. Engine-written. Absent in older caches.",
+      "additionalProperties": false,
+      "required": [
+        "sessions",
+        "serves",
+        "session_serves",
+        "given",
+        "reads",
+        "last",
+        "stats"
+      ],
+      "properties": {
+        "sessions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serves": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_serves": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "given": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha",
+              "serve"
+            ],
+            "properties": {
+              "sha": {
+                "type": "string"
+              },
+              "serve": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "reads": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "at",
+              "id",
+              "agent",
+              "serve"
+            ],
+            "properties": {
+              "at": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "agent": {
+                "type": "boolean"
+              },
+              "serve": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "last": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "node",
+            "sections"
+          ],
+          "properties": {
+            "node": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sections": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "catalog_history": {
+      "type": "object",
+      "description": "Machine-owned accepted definitions; read provenance only, never a future plan.",
+      "additionalProperties": {
+        "$ref": "#/properties/catalog/items"
+      }
+    }
+  },
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "contract.v1",
+  "id": "node",
+  "version": 3,
+  "title": "Business node output",
+  "applies": "business and sub nodes (QUALITY also at the report and answer nodes)",
+  "sections": [
+    {
+      "id": "node.quality",
+      "applies": "every node except Router.match and Router.cache-setup",
+      "text": "QUALITY: skip protocol rehearsal but never the program's domain analysis; no length or tool-call quota. A report node delivers its substantive answer, not a completion notice; machine output is not public delivery. Eligibility is not precedence: a missing priority rank does not exclude an otherwise eligible input or bypass a mandatory conflict/abstention threshold. Follow the declared order and set; disclose a separate interpretation without substituting it."
+    },
+    {
+      "id": "node.output_content",
+      "applies": "business and sub nodes",
+      "text": "OUTPUT CONTENT: output = the keys the program declares for this node plus machine facts (identities, numbers, statuses, paths, receipts by address); compliance, self-check, boundary and budget narration goes to Explain, never into new keys. You may add output.human_decisions: [{\"question_id\": <id>, \"effect\": one sentence on what that human decision changed}]."
+    },
+    {
+      "id": "node.output_schema",
+      "applies": "a node whose program declares an output schema",
+      "text": "OUTPUT SCHEMA: keep output to the keys and types of payload_schema.output - a declared value may be an address, a key typed with null may be left out, raw_user_message is the user's message, a key declared `address` accepts only an address. Refused when the program declares output_strict: OUTPUT_SCHEMA_INVALID. At a PARTIAL gate pause, missing terminal fields are pending, not produced: do not invent them; supplied fields still require their declared types. The terminal continuation requires every non-nullable field."
+    },
+    {
+      "id": "node.public_obligations",
+      "applies": "business and sub nodes with program-declared public obligations",
+      "text": "PUBLIC OBLIGATIONS: a step in delivery_obligations that shows the user something delivers it as a User Message; one that asks for a reply asks only through a gate (GATE SCOPE); call a conditional one not applicable only with evidence that its condition did not occur."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "contract.v1",
+  "id": "final-answer",
+  "version": 11,
+  "title": "Final answer",
+  "applies": "Engine.final-answer",
+  "sections": [
+    {
+      "id": "final-answer.keep",
+      "applies": "Engine.final-answer",
+      "placeholders": [
+        "final_note"
+      ],
+      "text": "ANSWER NODE: keep user_summary exactly <<final_note>> and output \"final_answer\" as served, user_messages [], explain \"\"; never stream :::report / :::explain / :::message here. semantics = final_answer plus optional report_parts and answer_details - the accounting stays at Engine.execute-report. Refused: FINAL_SEMANTICS_INVALID."
+    },
+    {
+      "id": "final-answer.reference",
+      "applies": "Engine.final-answer",
+      "text": "REFERENCE FIRST: reuse complete reports through semantics.report_parts, never retype them - items {ref, field: \"user_messages\", message_index: i} or {ref, field: \"user_summary\"}. Each ref comes from THIS reply's input_authority.input_refs (or its short id <node>@<visit>), never from a file or an earlier reply. Keep a served revision selector for a historical User Message, including pause frames; omission selects the latest frame. Historical selectors apply only here to user_messages, never to ordinary business inputs or Reports. A reference keeps the text, not its truth; a prior message is not a new decision or current fact. Delivered in node order, as pre-filled. Refused: REPORT_PART_INVALID, INPUT_REF_INVALID."
+    },
+    {
+      "id": "final-answer.reference_required",
+      "applies": "Engine.final-answer",
+      "text": "REFERENCE REQUIRED: every item of input_authority.report_candidates.required is in semantics.report_parts exactly as listed - all non-blank User Messages from accepted pause and terminal frames (short receipts too, retaining each revision/index even if texts match), every declared required Report, every nonblank PASS/DEGRADED main Report (messages and children never replace it), public-delivery / write-receipt obligations without a length floor, and last the execution report (Engine.execute-report@<visit>, user_summary). payload_skeleton.semantics.report_parts already holds them: keep all, append the optional Reports you choose - never a hand-picked subset; a node declared final_reference: never is still referenced for its User Messages and public deliveries / write receipts. The references never shorten the answer: final_answer stays the self-contained synthesis, never a pointer such as \"see the reports below\", and never replaces a referenced report. Refused: FINAL_REFERENCE_REQUIRED, FINAL_LEAD_POINTER."
+    },
+    {
+      "id": "final-answer.reasoning",
+      "applies": "part of final-answer.synthesis and execute-report.legacy_synthesis",
+      "text": "REASONING: compose and submit once - no extra call, node or self-review; use the whole-run execution_facts and child writes. Arithmetic/boundary: n observations have n-1 changes; 100->101->70->-5 has two declines; 100->120->110 retraces half; 99+1 does not exceed 100. Unequal periods or bases forbid causal attribution and prove no trend (different period lengths are not one series); calendar days are not trading days; inequalities give no units; a conditional does not prove its converse. Repeated analogy or simulation proves no real readiness, state, success probability, others' beliefs or deadline. Check contradictions: a counterexample defeats all / only / inevitable; mixed verification is not all-unverified; excluded or non-independent agreement stays excluded. Keep quotes; qualify an unsupported claim where it stands, openings and closings included. Year-over-year growth is not an expectations beat; preserve each number's comparison basis. Tool availability is not data reliability or proof of an exclusive remedy. Preserve the program verdict and conditions; name a differing independent interpretation and its evidence, never silently substitute it. Distinguish labelled from machine-checked counts; disclose net counts and demotions. Verified local calibration records do not verify market facts. Reuse existing ledgers by address, not regenerated copies. Scope source_verified to the exact atomic claim in machine claim_ids (node/visit), never an entire row, table or following list; separate adjacent derived/unverified values. A correct total does not certify each displayed value or source authenticity. Report actual side effects from existing receipts: created, updated, deleted/purged counts and limits when recorded; distinguish this run from a next run policy. An artifact list is not all side effects; missing counts are unknown, not zero. Derived conclusions inherit unverified/unknown inputs: carry the condition into conclusions and advice, never call those inputs verified. claim_classifications and dependency_observations expose effective labels and declared edges, not proof that an ID means the operand used; check that meaning without inventing a replacement edge. No deletion is a run-wide claim, not a synonym for no deleted artifact entry; use bound receipt_effects even when the artifact list omits deleted files. Symmetry, analogy or simulation cannot establish real agreement, absence of conflict, others' beliefs or an inevitable future; present a conditional interpretation or a question to check, not that unsupported fact. Explain unresolved_reasons literally: DERIVED_INPUTS_UNDECLARED means an existing derived claim lacks declared inputs, not a missing ID. Missing IDs, conflicting labels, cycles and depth limits are distinct; no reason certifies or disproves a formula."
+    },
+    {
+      "id": "final-answer.synthesis",
+      "applies": "Engine.final-answer",
+      "text": "FINAL SYNTHESIS (WITH OR WITHOUT references): semantics.final_answer is the self-contained business answer to the ORIGINAL whole request, not node accounting or merely the latest gate reply. Mandatory: at least 500 non-whitespace Unicode code points in this body alone; references, disclosures and footer do not count. Length does not prove quality: no padding, copied reports, fabricated evidence or finding quota. A conflicting explicit short/fixed-format requirement needs HSAW adjudication, never silent padding or an invented exemption. Group findings, preserve complete substantive content - never a recap, only the last node, or a pointer such as \"see above\". Lead with the overall conclusion and its reasons; develop cross-node implications. Cover ALL executed main business nodes in proportion (brief intake; full analysis, results, advice; exact writes), children through their parent. Use existing complete node_summaries/final_context and bound report references; page an addressed input only when needed, without rerunning work or adding a self-review node. Keep claim -> evidence -> derivation -> implication, decisive quantities (units, period, basis, source), comparisons, conditions / risks / limits, unresolved conflicts, recovered exceptions and human decisions with their scope. Artifact paths follow the substantive result with purpose and actual operation; paths and an export decision cannot replace the requested analysis. Match counts, values, units and conclusions to structured results; expose source errors and correction basis without rewriting caches. Separate observations, interpretations, inferences and advice. Missing real-world evidence: conditional conclusions, not promises - a disclaimer cannot cure an overclaim; unverified or conflicting inputs are never decisive - say what stays undecidable. Preserve effective machine demotions; source support proves neither retrieval authenticity, external truth nor prediction reliability. Actionable tasks: reasons, priorities, acceptance criteria; useful headings and comparisons, no mandatory domain template. Follow-up never authorizes action; mandatory disclaimers verbatim. A partial or failed answer leads with useful results, gaps or cause and safe recovery; keep safe_to_delete_without_data_loss=false. Optional semantics.answer_details links exact excerpts to coverage / key_data / comparisons / conditions_limits_risks / follow_up (a link, not proof of completeness). Refused: FINAL_ANSWER_REQUIRED. Develop the decisive trade-off, not just parallel node summaries: connect findings, state what defeats the preferred option and which observed change would alter the conclusion. Prioritize next actions with reasons and checkable criteria; distinguish a conditional recommendation from authorization. Omit inapplicable categories, never invent a comparison or certainty to fill them."
+    },
+    {
+      "id": "final-answer.answer_stream",
+      "applies": "Engine.final-answer, when the host captures the answer fence",
+      "text": "STREAM THE ANSWER: stream the whole semantics.final_answer as visible text between a line `:::answer Engine.final-answer` and a line `:::`, then commit \"final_answer\": \"@host\". The host-resolved body must meet the same synthesis floor as inline text. On HOST_TEXT_NOT_RECEIVED resubmit with the answer inline."
+    },
+    {
+      "id": "final-answer.format",
+      "applies": "Engine.final-answer",
+      "text": "FINAL FORMAT: final_answer is body-only Markdown, never a JSON accounting dump - no 🤖, guards or footer of your own; disclosures inside referenced reports stay as they are."
+    },
+    {
+      "id": "final-answer.cancelled",
+      "applies": "Engine.final-answer after the human cancelled at a gate",
+      "placeholders": [
+        "dropped",
+        "where"
+      ],
+      "text": "CANCELLED RUN: the human cancelled at <<where>>; deliver what the committed nodes produced and say plainly what was not done (<<dropped>>); no business work, no new question."
+    }
+  ]
+}

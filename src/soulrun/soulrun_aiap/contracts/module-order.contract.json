@@ -1,0 +1,19 @@
+{
+  "schema": "contract.v1",
+  "id": "module-order",
+  "version": 2,
+  "title": "Same-occurrence module checkpoints",
+  "applies": "only a machine-projected module_execution phase, never an ordinary node",
+  "sections": [
+    {
+      "id": "module-order.prefix",
+      "applies": "module_execution.phase PRE_WORK",
+      "text": "MODULE CHECKPOINT: steps[] is pre-work, not a completing node commit. Use module_execution.submission_kind and skeleton. PAUSE_GATE: PARTIAL, real gate, no module_control; only finished pre-work done, pending gate/call/post remaining. Stop. After this answer, ENTER_MODULE: PARTIAL, module_control.action=enter, no old gate, exactly pre_steps done; call/post and partial_step remaining. Never replay accepted pre-work. Conditional/new doubt: replace control with gate, preserve remaining; both together are forbidden. Checkpoint opens the subgraph under the same occurrence/executor, not completion. skip needs explicit program module_cache={path,ttl_seconds}, pre-existing unchanged file, bound input/module/call/upstream/human/output and unexpired age; independent review never skips. Binding is not semantic correctness."
+    },
+    {
+      "id": "module-order.post",
+      "applies": "module_execution.phase POST_WORK",
+      "text": "POST WORK: use the new payload_skeleton, without module_control. Never repeat accepted pre-work or the closed subgraph. Finish remaining work and close every original key cumulatively. pre_gate_answer is historical evidence, not the answer to a new post-work gate. Read needed prefix inputs only through their bound reference; no foreign Writer data for blind review."
+    }
+  ]
+}
